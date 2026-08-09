@@ -1,0 +1,410 @@
+{
+  "Navbar": {
+    "home": "Home",
+    "popular": "Popular",
+    "about": "About",
+    "contact": "Contact",
+    "bookNow": "Book Now",
+    "language": "Language",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "Hero": {
+    "button": "Book Now",
+    "slide1": {
+      "title": "Experience Fine Dining",
+      "description": "Reserve your table effortlessly and enjoy unforgettable moments."
+    },
+    "slide2": {
+      "title": "Taste Luxury Cuisine",
+      "description": "Every dish is crafted with passion and premium ingredients."
+    },
+    "slide3": {
+      "title": "Reserve Your Table",
+      "description": "Create memorable moments with your loved ones."
+    }
+  },
+  "FeaturedDishes": {
+    "dish1": {
+      "title": "Charred Steak & Golden Fries",
+      "description": "Perfectly grilled premium beef glazed with our signature burgundy sauce, served with crispy golden fries and a rich creamy pepper sauce for an unforgettable dining experience."
+    },
+    "dish2": {
+      "title": "Smoky Grilled Chicken Skewers",
+      "description": "Juicy marinated chicken skewers flame grilled to perfection with roasted peppers and herbs, served with our signature smoky dipping sauce."
+    },
+    "dish3": {
+      "title": "Creamy Garlic Seafood Pasta",
+      "description": "Tender shrimp tossed with silky fettuccine in a rich garlic cream sauce, finished with fresh herbs for a smooth and satisfying flavor. Every bite delivers a perfect balance of creamy richness and delicate seafood freshness."
+    },
+    "dish4": {
+      "title": "Herb Grilled Salmon",
+      "description": "Fresh Atlantic salmon, perfectly grilled with aromatic herbs and served with roasted baby potatoes, seasonal vegetables, and a touch of charred lemon for a light yet flavorful experience."
+    }
+  },
+  "AboutSection": {
+    "badge": "Our Story",
+    "title": {
+      "first": "Crafted with fire,",
+      "second": "Served with care"
+    },
+    "description": {
+      "first": "Savora was born from one simple belief: every great meal should tell a story. Inspired by authentic flavors and refined culinary techniques, we create dishes that combine premium ingredients with timeless recipes.",
+      "second": "From the first spark on the grill to the final garnish, every plate is prepared with passion, precision, and genuine hospitality. Our goal is not only to serve exceptional food, but to create memorable moments for every guest."
+    },
+    "quote": {
+      "text": "\"We don't just cook food, we build the moment around it.\"",
+      "author": "Head Chef, Savora"
+    },
+    "stats": {
+      "years": {
+        "value": "12+",
+        "label": "Years of Excellence"
+      },
+      "dishes": {
+        "value": "40+",
+        "label": "Signature Dishes"
+      },
+      "guests": {
+        "value": "98%",
+        "label": "Returning Guests"
+      }
+    },
+    "image": {
+      "title": "Where every plate begins",
+      "subtitle": "The Savora Kitchen"
+    }
+  },
+  "WhyChooseUs": {
+    "title": "Why Choose Savora",
+    "subtitle": "Everything you need for a perfect dining experience.",
+    "items": {
+      "reservation": {
+        "title": "Reserve in Seconds",
+        "description": "Book your table in seconds with a fast and seamless reservation process. Choose your preferred date and time, receive instant confirmation, and enjoy a stress-free dining experience from the very beginning."
+      },
+      "table": {
+        "title": "Choose Your Perfect Spot",
+        "description": "Find the table that perfectly matches your preferences before you arrive. Whether you're planning a family gathering, a romantic dinner, or a casual meal with friends, you can browse available tables, compare seating areas, and reserve the exact spot that best fits your occasion and comfort."
+      },
+      "experience": {
+        "title": "Enjoy a Premium Experience",
+        "description": "From the moment you reserve your table to the moment you're comfortably seated, our platform is designed to make every step simple, smooth, and enjoyable. Experience a smarter way to dine with flexible reservations, personalized seating choices, and a service that puts your convenience first."
+      }
+    }
+  },
+  "Footer": {
+    "description": "Reserve your table in just a few clicks. Enjoy a seamless dining experience with easy online reservations.",
+    "quickLinks": {
+      "title": "Quick Links",
+      "home": "Home",
+      "about": "About",
+      "menu": "Menu",
+      "reservation": "Reserve a Table"
+    },
+    "contact": {
+      "title": "Contact",
+      "address": "123, Cairo, Egypt",
+      "phone": "+20 100 123 4567",
+      "email": "hello@savora.com"
+    },
+    "hours": {
+      "title": "Opening Hours",
+      "weekdays": "Monday - Friday",
+      "weekdaysTime": "9:00 AM - 12:00 AM",
+      "weekend": "Saturday - Sunday",
+      "weekendTime": "10:00 AM - 11:00 PM"
+    },
+    "copyright": "© 2026 Savora. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions"
+  },
+  "common": {
+    "appName": "Savora",
+    "loading": "Loading...",
+    "search": "Search",
+    "filter": "Filter",
+    "filters": "Filters",
+    "clear": "Clear",
+    "clearAll": "Clear all",
+    "apply": "Apply",
+    "applyFilters": "Apply filters",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "saving": "Saving...",
+    "saveChanges": "Save changes",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "actions": "Actions",
+    "status": "Status",
+    "date": "Date",
+    "time": "Time",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "language": "Language",
+    "logout": "Log out",
+    "somethingWentWrong": "Something went wrong. Please try again.",
+    "retry": "Retry",
+    "noResults": "No results found",
+    "required": "Required",
+    "optional": "Optional",
+    "active": "Active",
+    "inactive": "Inactive",
+    "yes": "Yes",
+    "no": "No",
+    "errors": {
+      "required": "This field is required.",
+      "invalidEmail": "Enter a valid email address.",
+      "network": "Network error. Please check your connection.",
+      "unauthorized": "Your session has expired. Please log in again.",
+      "forbidden": "You don't have permission to do this.",
+      "notFound": "The requested resource was not found.",
+      "conflict": "This action conflicts with existing data.",
+      "server": "Something went wrong on our end. Please try again shortly."
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "reservations": "Reservations",
+    "staffAccounts": "Staff Accounts",
+    "manageTables": "Manage Tables",
+    "workingHours": "Working Hours",
+    "slotDuration": "Slot Duration",
+    "profile": "Profile",
+    "openMenu": "Open navigation menu",
+    "dashboardNavigation": "Dashboard navigation",
+    "admin": "Manager",
+    "staff": "Staff"
+  },
+  "auth": {
+    "welcomeBack": "Good to See You Again!",
+    "loginSubtitle": "Log in to continue managing reservations and providing the best dining experience.",
+    "username": "Username",
+    "password": "Password",
+    "login": "Log in",
+    "loggingIn": "Logging in...",
+    "loginSuccess": "Login successful! Welcome back.",
+    "errors": {
+      "usernameRequired": "Username is required.",
+      "passwordRequired": "Password is required.",
+      "invalidCredentials": "Incorrect username or password.",
+      "passwordMin": "Password must be at least 8 characters.",
+      "passwordUppercase": "Password must include an uppercase letter.",
+      "passwordDigit": "Password must include a digit.",
+      "passwordSpecial": "Password must include a special character.",
+      "passwordsMismatch": "Passwords do not match."
+    }
+  },
+  "dashboard": {
+    "greeting": "Hello, {name}",
+    "stats": {
+      "reservationsToday": "Reservations today",
+      "availableTables": "Available tables",
+      "busyTables": "Busy tables",
+      "noShowsToday": "No-shows today"
+    },
+    "upcomingReservations": "Upcoming Reservations",
+    "emptyToday": {
+      "title": "No Reservations Today",
+      "description": "There are no reservations scheduled for today."
+    },
+    "emptyAvailable": {
+      "title": "No Available Tables",
+      "description": "All tables are currently occupied or reserved."
+    },
+    "emptyBusy": {
+      "title": "No Busy Tables",
+      "description": "No tables are currently busy."
+    },
+    "emptyNoShows": {
+      "title": "Full House Tonight",
+      "description": "No one missed their reservation today."
+    }
+  },
+  "reservation": {
+    "title": "Reservations",
+    "reservationCode": "Reservation Code",
+    "table": "Table",
+    "guests": "Guests",
+    "guestCount": "Number of guests",
+    "timeSlots": "Time Slots",
+    "selectTimeSlot": "Select Time Slot",
+    "chooseTableAndTime": "Choose your table, select your preferred time, and complete your reservation.",
+    "selectTable": "Select Table",
+    "selected": "Selected",
+    "specialRequests": "Special Requests",
+    "arrivalDelay": "Expected Arrival Delay",
+    "notificationPreference": "Notification Preference",
+    "cancellationReason": "Reason for cancellation",
+    "personalInfo": "Personal Info",
+    "fullName": "Full name",
+    "phoneNumber": "Phone number",
+    "alternativePhone": "Alternative phone",
+    "confirmBooking": "Confirm Booking",
+    "reservationConfirmed": "Reservation Confirmed!",
+    "confirmationSubtitle": "Details of your reservation are shown below.",
+    "downloadDetails": "Save",
+    "cancelReservation": "Cancel Reservation",
+    "cancelReservationTitle": "Cancel Reservation?",
+    "cancelReservationConfirm": "Are you sure you want to cancel this reservation? You will lose your reservation and this action cannot be undone.",
+    "keepReservation": "Keep Reservation",
+    "yesCancel": "Yes, Cancel",
+    "cancelledSuccessfully": "Your reservation has been cancelled successfully.",
+    "alreadyUsed": "This reservation has already been used for the reserved time. Please choose another time slot.",
+    "emptyDay": {
+      "title": "No Reservations on This Day",
+      "description": "There are no reservations for the selected day."
+    },
+    "status": {
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirmed",
+      "CANCELLED": "Cancelled",
+      "COMPLETED": "Completed",
+      "ARRIVED": "Arrived"
+    },
+    "notification": {
+      "WHATSAPP": "WhatsApp",
+      "EMAIL": "Email"
+    },
+    "errors": {
+      "nameRequired": "Name is required.",
+      "phoneInvalid": "Enter a valid phone number (8-15 digits).",
+      "tableRequired": "Please select a table.",
+      "tableIdInvalid": "The selected table is invalid.",
+      "dateRequired": "Please select a date.",
+      "dateInvalid": "Enter a valid date in YYYY-MM-DD format.",
+      "guestCountMin": "At least one guest is required.",
+      "guestCountInteger": "Guest count must be a whole number.",
+      "timeSlotRequired": "Please select at least one time slot.",
+      "timeSlotIdInvalid": "The selected time slot is invalid.",
+      "notificationPreferenceInvalid": "Please select a valid notification preference.",
+      "specialRequestsMax": "Special requests must not exceed 500 characters.",
+      "cancellationReasonRequired": "Please enter a cancellation reason."
+    },
+    "filters": {
+      "status": "Status",
+      "table": "Table",
+      "date": "Date",
+      "sort": "Sort By"
+    }
+  },
+  "table": {
+    "title": "Manage Tables",
+    "addTable": "Add New Table",
+    "tableNumber": "Table Number",
+    "capacity": "Capacity",
+    "position": "Position",
+    "area": "Area",
+    "seats": "seats",
+    "createTable": "Create Table",
+    "createTableTost": "Table created successfully.",
+    "editTable": "Edit Table",
+    "deleteConfirm": "Are you sure you want to delete this table? This action cannot be undone.",
+    "status": {
+      "AVAILABLE": "Available",
+      "RESERVED": "Reserved",
+      "OCCUPIED": "Busy",
+      "MAINTENANCE": "Maintenance"
+    },
+    "empty": {
+      "title": "No Tables Yet",
+      "description": "Add your first table to get started."
+    },
+    "errors": {
+      "tableNumberMin": "Table number must be at least 1.",
+      "tableNumberInteger": "Table number must be a whole number.",
+      "capacityMin": "Capacity must be at least 1.",
+      "capacityInteger": "Capacity must be a whole number."
+    }
+  },
+  "user": {
+    "title": "Staff Accounts",
+    "createAccount": "Create Staff Account",
+    "username": "Username",
+    "role": "Role",
+    "password": "Password",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "roles": {
+      "ADMIN": "Admin",
+      "STAFF": "Staff"
+    },
+    "empty": {
+      "title": "No Accounts Yet",
+      "description": "Create your first staff account to get started."
+    },
+    "errors": {
+      "usernameMin": "Username must be at least 3 characters."
+    }
+  },
+  "workingHours": {
+    "title": "Working Hours",
+    "day": "Day",
+    "openTime": "Opening Time",
+    "closeTime": "Closing Time",
+    "closed": "Closed",
+    "open": "Open",
+    "applyToAllDays": "Apply schedule to all days",
+    "startTime": "Start time",
+    "endTime": "End time",
+    "apply": "Apply",
+    "days": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    },
+    "empty": {
+      "title": "No Working Hours Yet",
+      "description": "Set up your restaurant's working hours."
+    },
+    "errors": {
+      "dayInvalid": "Day of week must be between 0 and 6.",
+      "timeInvalid": "Enter a valid time in HH:MM format.",
+      "exactlySevenDays": "Working hours must contain exactly 7 days."
+    }
+  },
+  "timeSlots": {
+    "title": "Slot Duration",
+    "slotDurationMinutes": "Slot Duration (minutes)",
+    "updateSuccess": "Time slot configuration updated.",
+    "errors": {
+      "durationMin": "Slot duration must be at least 15 minutes.",
+      "durationMax": "Slot duration must not exceed 240 minutes.",
+      "durationInteger": "Slot duration must be a whole number."
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "changePassword": "Change Password",
+    "currentPassword": "Current password"
+  },
+  "landing": {
+    "hero": {
+      "title": "Experience Fine Dining",
+      "cta": "Reserve a Table"
+    },
+    "menu": "Our Menu",
+    "reserveTable": "Reserve Table",
+    "restaurantFloor": "Restaurant Floor",
+    "selectDate": "Select a date",
+    "bookNow": "Book now",
+    "cancelBooking": "Cancel a booking",
+    "nav": {
+      "home": "Home",
+      "menu": "Menu",
+      "about": "About",
+      "contact": "Contact"
+    }
+  }
+}
