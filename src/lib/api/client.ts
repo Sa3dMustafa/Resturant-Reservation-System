@@ -1,7 +1,7 @@
 import type { ApiError, ApiSuccess } from "@/types";
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+  process.env.NEXT_PUBLIC_API_URL ?? "/api/v1";
 
 export class ApiRequestError extends Error {
   status: number;
