@@ -1,4 +1,4 @@
-name: Frontend CI
+name: Frontend CI/CD
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   packages: write
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,6 +27,8 @@ jobs:
         run: npm ci
 
       - name: Build application
+        env:
+          NEXT_PUBLIC_API_URL: http://52.70.173.151:4000/api/v1
         run: npm run build
 
       - name: Login to GHCR
@@ -34,7 +36,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ github.token }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
@@ -42,6 +44,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
+          build-args: |
+            NEXT_PUBLIC_API_URL=http://52.70.173.151:4000/api/v1
           tags: |
-            ghcr.io/sa3dmustafa/savora-frontend:latest
-            ghcr.io/sa3dmustafa/savora-frontend:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/savora-frontend:${{ github.sha }}
