@@ -43,5 +43,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/savora-frontend:latest
-            ghcr.io/${{ github.repository_owner }}/savora-frontend:${{ github.sha }}
+            ghcr.io/sa3dmustafa/savora-frontend:latest
+            ghcr.io/sa3dmustafa/savora-frontend:${{ github.sha }}
