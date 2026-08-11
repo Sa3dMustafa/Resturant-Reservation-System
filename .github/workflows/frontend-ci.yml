@@ -37,6 +37,16 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Check API URL
+        run: |
+          if [ -z "${NEXT_PUBLIC_API_URL}" ]; then
+            echo "ERROR: NEXT_PUBLIC_API_URL is not configured"
+            exit 1
+          fi
+          echo "API URL configured: ${NEXT_PUBLIC_API_URL}"
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.NEXT_PUBLIC_API_URL }}
+
       - name: Build Next.js application
         run: npm run build
         env:
