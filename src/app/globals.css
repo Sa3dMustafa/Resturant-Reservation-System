@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0a0908;
+  --foreground: #f5efe4;
+
+  --card: #161311;
+  --card-foreground: #f5efe4;
+
+  --sidebar: #161311;
+  --sidebar-foreground: #f5efe4;
+  --sidebar-border: #2a2420;
+
+  --popover: #161311;
+  --popover-foreground: #f5efe4;
+
+  --primary: #d4a843;
+  --primary-foreground: #1a1508;
+
+  --secondary: #211c17;
+  --secondary-foreground: #f5efe4;
+
+  --muted: #1c1815;
+  --muted-foreground: #a89f8f;
+
+  --accent: #251f18;
+  --accent-foreground: #d4a843;
+
+  --destructive: #dc4b3f;
+  --destructive-foreground: #fdf3f2;
+
+  --success: #4caf6d;
+  --warning: #d4a843;
+  --info: #6b8fd4;
+
+  --border: #2a2420;
+  --input: #2a2420;
+  --ring: #d4a843;
+
+  --radius: 0.75rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 0.35rem);
+  --radius-md: calc(var(--radius) - 0.2rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.3rem);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+:root {
+  /*
+   * System font stacks (no next/font/google dependency, so the build
+   * doesn't require reaching fonts.googleapis.com). Swap these for
+   * next/font/google (e.g. Inter + Cormorant Garamond) once deployed
+   * somewhere with outbound internet access, if a closer match to the
+   * mockups' typography is wanted.
+   */
+  --font-body: ui-sans-serif, system-ui, "Segoe UI", Roboto, Tahoma, Arial, sans-serif;
+  --font-display: ui-serif, Georgia, "Times New Roman", serif;
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans, ui-sans-serif, system-ui);
+}
+
+.font-display {
+  font-family: var(--font-display, var(--font-sans));
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
