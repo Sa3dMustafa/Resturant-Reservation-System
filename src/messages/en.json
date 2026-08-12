@@ -258,6 +258,10 @@
     "yesCancel": "Yes, Cancel",
     "cancelledSuccessfully": "Your reservation has been cancelled successfully.",
     "alreadyUsed": "This reservation has already been used for the reserved time. Please choose another time slot.",
+    "restaurantClosed": "The restaurant is closed on this day. Reservations are unavailable.",
+    "selectTableFirst": "Select a table to continue.",
+    "tableCapacity": "Table capacity",
+    "consecutiveSlotsOnly": "Time slots must be selected consecutively without gaps.",
     "emptyDay": {
       "title": "No Reservations on This Day",
       "description": "There are no reservations for the selected day."
@@ -307,6 +311,22 @@
     "createTableTost": "Table created successfully.",
     "editTable": "Edit Table",
     "deleteConfirm": "Are you sure you want to delete this table? This action cannot be undone.",
+    "tableDetails": "Table Details",
+    "tableDetailsDescription": "View table information and today's reservations.",
+    "reservations": "Reservations",
+    "reservationsForDate": "Reservations scheduled for today",
+    "reservation": "reservation",
+    "unknownClient": "Unknown Client",
+    "reservationCode": "Reservation Code",
+    "guests": "Guests",
+    "people": "people",
+    "phone": "Phone",
+    "time": "Time",
+    "timeSlots": "Time Slots",
+    "specialRequests": "Special Requests",
+    "noReservations": "No Reservations",
+    "noReservationsDescription": "There are no reservations assigned to this table for today.",
+    "email": "Email",
     "status": {
       "AVAILABLE": "Available",
       "RESERVED": "Reserved",
@@ -324,6 +344,7 @@
       "capacityInteger": "Capacity must be a whole number."
     }
   },
+
   "user": {
     "title": "Staff Accounts",
     "createAccount": "Create Staff Account",
@@ -332,16 +353,36 @@
     "password": "Password",
     "newPassword": "New password",
     "confirmNewPassword": "Confirm new password",
+
     "roles": {
       "ADMIN": "Admin",
       "STAFF": "Staff"
     },
+
+    "createdSuccessfully": "Staff account created successfully.",
+    "updatedSuccessfully": "Updated successfully.",
+    "deletedSuccessfully": "User deleted successfully.",
+
+    "deleted": "Deleted",
+    "notDeleted": "Not Deleted",
+
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "alreadyDeleted": "User has already been deleted.",
+
+    "deleteTitle": "Delete User?",
+    "deleteDescription": "Are you sure you want to delete {name}? This action cannot be undone.",
+
+    "cannotEditDeleted": "Deleted users cannot be edited.",
+
     "empty": {
       "title": "No Accounts Yet",
       "description": "Create your first staff account to get started."
     },
+
     "errors": {
-      "usernameMin": "Username must be at least 3 characters."
+      "usernameMin": "Username must be at least 3 characters.",
+      "deleteFailed": "Failed to delete user."
     }
   },
   "workingHours": {

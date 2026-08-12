@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarDays, Minus, Plus } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 import { useTranslations } from "next-intl";
 
@@ -13,20 +13,18 @@ import { Button } from "@/components/ui/button";
 
 type Props = {
   date: string;
-  guestCount: number;
   selectedTable: RestaurantTable | null;
+  restaurantClosed: boolean;
 
   onDateChange: (value: string) => void;
-  onGuestCountChange: (value: number) => void;
   onContinue: () => void;
 };
 
 export function ReservationFilters({
   date,
-  guestCount,
   selectedTable,
+  restaurantClosed,
   onDateChange,
-  onGuestCountChange,
   onContinue,
 }: Props) {
   const t = useTranslations("reservation");
@@ -44,57 +42,48 @@ export function ReservationFilters({
         </div>
 
         <div className="mt-4 rounded-lg border border-[#333] bg-[#171717] p-3">
-          <Label className="text-xs text-gray-400">{tCommon("date")}</Label>
+          <Label className="text-xs text-gray-400">
+            {tCommon("date")}
+          </Label>
 
           <Input
             type="date"
             value={date}
-            min={format(new Date(), "yyyy-MM-dd")}
-            onChange={(event) => onDateChange(event.target.value)}
+            min={format(
+              new Date(),
+              "yyyy-MM-dd",
+            )}
+            onChange={(event) =>
+              onDateChange(
+                event.target.value,
+              )
+            }
             className="mt-2 h-10 border-[#444] bg-[#191919] text-white scheme-dark"
           />
         </div>
 
-        <div className="mt-5 border-t border-[#2d2d2d] pt-5">
-          <Label className="text-xs text-gray-400">{t("guestCount")}</Label>
-
-          <div className="mt-2 flex items-center gap-2">
-            <Button
-              type="button"
-              size="icon"
-              variant="outline"
-              disabled={guestCount <= 1}
-              onClick={() => onGuestCountChange(guestCount - 1)}
-              className="border-[#4b4b4b] bg-transparent text-white hover:bg-[#222]"
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-
-            <Input
-              type="number"
-              min={1}
-              value={guestCount}
-              onChange={(event) =>
-                onGuestCountChange(Number(event.target.value))
-              }
-              className="border-[#4b4b4b] bg-[#191919] text-center text-white"
-            />
-
-            <Button
-              type="button"
-              size="icon"
-              variant="outline"
-              onClick={() => onGuestCountChange(guestCount + 1)}
-              className="border-[#4b4b4b] bg-transparent text-white hover:bg-[#222]"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
+        {restaurantClosed ? (
+          <div className="mt-5 rounded-lg border border-red-900/50 bg-red-950/20 p-3">
+            <p className="text-xs leading-5 text-red-400">
+              {t("restaurantClosed")}
+            </p>
           </div>
-        </div>
+        ) : (
+          <div className="mt-5 rounded-lg border border-[#4b3c1b] bg-[#17140d] p-3">
+            <p className="text-xs leading-5 text-gray-400">
+              {selectedTable
+                ? `${t("table")}: ${selectedTable.tableNumber}`
+                : t("selectTableFirst")}
+            </p>
+          </div>
+        )}
 
         <Button
           type="button"
-          disabled={!selectedTable}
+          disabled={
+            !selectedTable ||
+            restaurantClosed
+          }
           onClick={onContinue}
           className="mt-6 h-11 w-full bg-[#c99a2e] text-black hover:bg-[#ddb44b] disabled:bg-[#444] disabled:text-gray-600"
         >

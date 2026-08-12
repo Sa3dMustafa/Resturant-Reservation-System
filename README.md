@@ -4,8 +4,8 @@
 
 It provides two experiences in one application:
 
-* 🌐 **Public Booking** — guests can browse available tables and create reservations without an account.
-* 🔐 **Staff Dashboard** — staff and admins can manage reservations, tables, working hours, and accounts based on their roles.
+- 🌐 **Public Booking** — guests can browse available tables and create reservations without an account.
+- 🔐 **Staff Dashboard** — staff and admins can manage reservations, tables, working hours, and accounts based on their roles.
 
 The application is designed with a focus on **clean architecture, reusable components, strong typing, responsive UI, and a smooth English/Arabic RTL experience**.
 
@@ -15,33 +15,33 @@ The application is designed with a focus on **clean architecture, reusable compo
 
 ### Public Reservation
 
-* Select reservation date and party size.
-* Browse tables based on capacity and availability.
-* View table status through an interactive floor view.
-* Select a **continuous block of time slots**.
-* Submit guest information with validation.
-* Receive a reservation confirmation and unique code.
-* Fully responsive booking experience.
+- Select reservation date and party size.
+- Browse tables based on capacity and availability.
+- View table status through an interactive floor view.
+- Select a **continuous block of time slots**.
+- Submit guest information with validation.
+- Receive a reservation confirmation and unique code.
+- Fully responsive booking experience.
 
 ### Staff Dashboard
 
-* View reservation statistics.
-* Search, filter, and paginate reservations.
-* View reservation details.
-* Confirm, cancel, or complete reservations.
-* Monitor table availability.
-* Responsive dashboard with loading, empty, and error states.
+- View reservation statistics.
+- Search, filter, and paginate reservations.
+- View reservation details.
+- Confirm, cancel, or complete reservations.
+- Monitor table availability.
+- Responsive dashboard with loading, empty, and error states.
 
 ### Admin Management
 
 Admins can additionally:
 
-* Create, edit, and delete tables.
-* Manage staff accounts and roles.
-* Activate or deactivate accounts.
-* Configure working hours.
-* Support overnight working hours such as `18:00 → 02:00`.
-* Configure time-slot duration.
+- Create, edit, and delete tables.
+- Manage staff accounts and roles.
+- Activate or deactivate accounts.
+- Configure working hours.
+- Support overnight working hours such as `18:00 → 02:00`.
+- Configure time-slot duration.
 
 ---
 
@@ -111,12 +111,12 @@ src/
 
 ### Architecture Principles
 
-* **Feature-based organization** keeps each domain's UI and logic together.
-* **Service layer** separates API communication from UI components.
-* **TanStack Query** manages server state, caching, and mutations.
-* **Zod schemas** provide consistent form and API validation.
-* **Centralized RBAC** controls both navigation and protected routes.
-* **Reusable UI components** keep the interface consistent across the application.
+- **Feature-based organization** keeps each domain's UI and logic together.
+- **Service layer** separates API communication from UI components.
+- **TanStack Query** manages server state, caching, and mutations.
+- **Zod schemas** provide consistent form and API validation.
+- **Centralized RBAC** controls both navigation and protected routes.
+- **Reusable UI components** keep the interface consistent across the application.
 
 ---
 
@@ -139,9 +139,9 @@ Authorization is enforced at both the **navigation** and **route** levels.
 
 The application supports:
 
-* 🇬🇧 English
-* 🇪🇬 Arabic
-* ↔️ Full RTL support
+- 🇬🇧 English
+- 🇪🇬 Arabic
+- ↔️ Full RTL support
 
 Routes use an explicit locale:
 

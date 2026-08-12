@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api/client";
+
 import type {
   AdminUser,
   CreateUserRequest,
@@ -21,36 +22,40 @@ function buildQuery(params: UsersQueryParams = {}) {
     }
   });
 
-  const qs = query.toString();
+  const queryString = query.toString();
 
-  return qs ? `?${qs}` : "";
+  return queryString ? `?${queryString}` : "";
 }
 
 export const usersService = {
-  // GET /admin/users
-  //
-  // apiClient already unwraps:
-  // {
-  //   success: true,
-  //   data: {
-  //     users: [...],
-  //     meta: {...}
-  //   }
-  // }
-  //
-  // So this method returns:
-  // {
-  //   users: AdminUser[],
-  //   meta: PaginationMeta
-  // }
-  list: (params: UsersQueryParams = {}) =>
-    apiClient.get<UsersListResponse>(`/admin/users${buildQuery(params)}`),
+  list: async (
+    params: UsersQueryParams = {},
+  ): Promise<UsersListResponse> => {
+    return apiClient.get<UsersListResponse>(
+      `/admin/users${buildQuery(params)}`,
+    );
+  },
 
-  // POST /admin/users
-  create: (payload: CreateUserRequest) =>
-    apiClient.post<{ user: AdminUser }>("/admin/users", payload),
+  create: async (
+    payload: CreateUserRequest,
+  ): Promise<{ user: AdminUser }> => {
+    return apiClient.post<{ user: AdminUser }>(
+      "/admin/users",
+      payload,
+    );
+  },
 
-  // PATCH /admin/users/:id
-  update: (id: string, payload: UpdateUserRequest) =>
-    apiClient.patch<{ user: AdminUser }>(`/admin/users/${id}`, payload),
+  update: async (
+    id: string,
+    payload: UpdateUserRequest,
+  ): Promise<{ user: AdminUser }> => {
+    return apiClient.patch<{ user: AdminUser }>(
+      `/admin/users/${id}`,
+      payload,
+    );
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete<void>(`/admin/users/${id}`);
+  },
 };

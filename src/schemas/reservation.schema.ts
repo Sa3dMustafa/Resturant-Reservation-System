@@ -8,23 +8,17 @@ const phoneRegex = /^\+?[0-9]{8,15}$/;
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
 export const reservationClientSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "reservation.errors.nameRequired"),
-
+  name: z.string().trim().min(1, "reservation.errors.nameRequired"),
   email: z
     .string()
     .trim()
     .email("common.errors.invalidEmail")
     .optional()
     .or(z.literal("")),
-
   phoneNumber: z
     .string()
     .trim()
     .regex(phoneRegex, "reservation.errors.phoneInvalid"),
-
   alternativePhone: z
     .string()
     .trim()
@@ -36,22 +30,15 @@ export const reservationClientSchema = z.object({
 export const createReservationSchema = z
   .object({
     client: reservationClientSchema,
-
     tableId: z
       .string()
       .trim()
       .regex(uuidRegex, "reservation.errors.tableIdInvalid"),
-
-    date: z
-      .string()
-      .regex(dateRegex, "reservation.errors.dateInvalid"),
-
-    guestCount: z
-      .coerce
+    date: z.string().regex(dateRegex, "reservation.errors.dateInvalid"),
+    guestCount: z.coerce
       .number()
       .int("reservation.errors.guestCountInteger")
       .min(1, "reservation.errors.guestCountMin"),
-
     timeSlotIds: z
       .array(
         z
@@ -60,29 +47,15 @@ export const createReservationSchema = z
           .regex(uuidRegex, "reservation.errors.timeSlotIdInvalid"),
       )
       .min(1, "reservation.errors.timeSlotRequired"),
-
     notificationPreference: z.enum(
       ["WHATSAPP", "EMAIL"],
       "reservation.errors.notificationPreferenceInvalid",
     ),
-
-    expectedArrivalDelay: z
-      .string()
-      .trim()
-      .optional()
-      .or(z.literal("")),
-
-    specialRequests: z
-      .string()
-      .trim()
-      .optional()
-      .or(z.literal("")),
+    expectedArrivalDelay: z.string().trim().optional().or(z.literal("")),
+    specialRequests: z.string().trim().optional().or(z.literal("")),
   })
   .superRefine((data, ctx) => {
-    if (
-      data.notificationPreference === "EMAIL" &&
-      !data.client.email
-    ) {
+    if (data.notificationPreference === "EMAIL" && !data.client.email) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["client", "email"],

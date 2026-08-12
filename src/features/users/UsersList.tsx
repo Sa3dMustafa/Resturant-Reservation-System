@@ -4,37 +4,21 @@ import { useState } from "react";
 
 import { useTranslations } from "next-intl";
 
-import { Users as UsersIcon, Pencil } from "lucide-react";
+import { toast } from "sonner";
 
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
-import { Badge } from "@/components/ui/badge";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { EmptyState } from "@/components/shared/EmptyState";
 import { ErrorState } from "@/components/shared/ErrorState";
 import { TableRowsSkeleton } from "@/components/shared/LoadingSkeleton";
-import { SearchInput } from "@/components/shared/SearchInput";
 import { Pagination } from "@/components/shared/Pagination";
 
-import { useUsersList } from "@/hooks/useUsers";
+import {
+  useDeleteUser,
+  useUsersList,
+} from "@/hooks/useUsers";
+
+import { ApiRequestError } from "@/lib/api/client";
 
 import type {
   AdminUser,
@@ -43,23 +27,45 @@ import type {
 } from "@/types";
 
 import { UserFormDialog } from "./UserFormDialog";
+import { UsersFilters } from "./UsersFilters";
+import { UsersTable } from "./UsersTable";
+import { DeleteUserDialog } from "./DeleteUserDialog";
 
 export function UsersList() {
   const t = useTranslations("user");
-  const tCommon = useTranslations("common");
 
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [role, setRole] = useState<UserRole | "ALL">("ALL");
 
-  const [formOpen, setFormOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [search, setSearch] =
+    useState("");
+
+  const [role, setRole] =
+    useState<UserRole | "ALL">("ALL");
+
+  const [formOpen, setFormOpen] =
+    useState(false);
+
+  const [editingUser, setEditingUser] =
+    useState<AdminUser | null>(null);
+
+  const [
+    deleteDialogOpen,
+    setDeleteDialogOpen,
+  ] = useState(false);
+
+  const [
+    deletingUser,
+    setDeletingUser,
+  ] = useState<AdminUser | null>(null);
 
   const params: UsersQueryParams = {
     page,
     limit: 8,
     search: search || undefined,
-    role: role === "ALL" ? undefined : role,
+    role:
+      role === "ALL"
+        ? undefined
+        : role,
   };
 
   const {
@@ -69,160 +75,169 @@ export function UsersList() {
     refetch,
   } = useUsersList(params);
 
-  // IMPORTANT:
-  // apiClient already unwraps `data`.
-  //
-  // Actual response after apiClient:
-  //
-  // {
-  //   users: AdminUser[],
-  //   meta: PaginationMeta
-  // }
-  //
-  // NOT:
-  //
-  // {
-  //   users: {
-  //     users: AdminUser[],
-  //     meta: PaginationMeta
-  //   }
-  // }
+  const deleteMutation =
+    useDeleteUser();
 
   const users = data?.users ?? [];
   const meta = data?.meta;
+
+  const handleSearchChange = (
+    value: string,
+  ) => {
+    setSearch(value);
+    setPage(1);
+  };
+
+  const handleRoleChange = (
+    value: UserRole | "ALL",
+  ) => {
+    setRole(value);
+    setPage(1);
+  };
 
   const handleCreate = () => {
     setEditingUser(null);
     setFormOpen(true);
   };
 
-  const handleEdit = (user: AdminUser) => {
+  const handleEdit = (
+    user: AdminUser,
+  ) => {
+    if (user.isDeleted) {
+      toast.error(
+        t("cannotEditDeleted"),
+      );
+
+      return;
+    }
+
     setEditingUser(user);
     setFormOpen(true);
   };
 
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
-    setPage(1);
+  const handleFormOpenChange = (
+    open: boolean,
+  ) => {
+    if (!open) {
+      setEditingUser(null);
+    }
+
+    setFormOpen(open);
   };
 
-  const handleRoleChange = (value: string) => {
-    setRole(value as UserRole | "ALL");
-    setPage(1);
+  const handleDeleteClick = (
+    user: AdminUser,
+  ) => {
+    if (user.isDeleted) {
+      toast.error(
+        t("alreadyDeleted"),
+      );
+
+      return;
+    }
+
+    setDeletingUser(user);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteDialogChange = (
+    open: boolean,
+  ) => {
+    if (deleteMutation.isPending) {
+      return;
+    }
+
+    setDeleteDialogOpen(open);
+
+    if (!open) {
+      setDeletingUser(null);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deletingUser) {
+      return;
+    }
+
+    deleteMutation.mutate(
+      deletingUser.id,
+      {
+        onSuccess: () => {
+          toast.success(
+            t("deletedSuccessfully"),
+          );
+
+          setDeleteDialogOpen(false);
+          setDeletingUser(null);
+
+          if (
+            page > 1 &&
+            users.length === 1
+          ) {
+            setPage((currentPage) =>
+              Math.max(
+                1,
+                currentPage - 1,
+              ),
+            );
+          }
+        },
+
+        onError: (error) => {
+          const message =
+            error instanceof ApiRequestError
+              ? error.message
+              : t("errors.deleteFailed");
+
+          toast.error(message);
+        },
+      },
+    );
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <SearchInput
-            value={search}
-            onChange={handleSearchChange}
-            className="sm:max-w-xs"
-          />
-
-          <Select value={role} onValueChange={handleRoleChange}>
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue placeholder={t("role")} />
-            </SelectTrigger>
-
-            <SelectContent>
-              <SelectItem value="ALL">
-                {tCommon("clearAll")}
-              </SelectItem>
-
-              <SelectItem value="ADMIN">
-                {t("roles.ADMIN")}
-              </SelectItem>
-
-              <SelectItem value="STAFF">
-                {t("roles.STAFF")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button onClick={handleCreate}>
-          {t("createAccount")}
-        </Button>
-      </div>
+      <UsersFilters
+        search={search}
+        role={role}
+        onSearchChange={
+          handleSearchChange
+        }
+        onRoleChange={
+          handleRoleChange
+        }
+        onCreate={handleCreate}
+      />
 
       <Card className="overflow-hidden">
         {isLoading ? (
-          <TableRowsSkeleton rows={6} cols={5} />
+          <TableRowsSkeleton
+            rows={6}
+            cols={6}
+          />
         ) : isError ? (
-          <ErrorState onRetry={refetch} />
+          <ErrorState
+            onRetry={refetch}
+          />
         ) : users.length === 0 ? (
           <EmptyState
-            icon={UsersIcon}
             title={t("empty.title")}
-            description={t("empty.description")}
+            description={t(
+              "empty.description",
+            )}
           />
         ) : (
           <>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{tCommon("name")}</TableHead>
-                  <TableHead>{t("username")}</TableHead>
-                  <TableHead>{t("role")}</TableHead>
-                  <TableHead>{tCommon("status")}</TableHead>
-                  <TableHead className="text-end">
-                    {tCommon("actions")}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-
-              <TableBody>
-                {users.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">
-                      {user.name}
-                    </TableCell>
-
-                    <TableCell className="text-muted-foreground">
-                      {user.username}
-                    </TableCell>
-
-                    <TableCell>
-                      <Badge
-                        variant={
-                          user.role === "ADMIN"
-                            ? "default"
-                            : "muted"
-                        }
-                      >
-                        {t(`roles.${user.role}`)}
-                      </Badge>
-                    </TableCell>
-
-                    <TableCell>
-                      <Badge
-                        variant={
-                          user.isActive
-                            ? "success"
-                            : "muted"
-                        }
-                      >
-                        {user.isActive
-                          ? tCommon("active")
-                          : tCommon("inactive")}
-                      </Badge>
-                    </TableCell>
-
-                    <TableCell className="text-end">
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={() => handleEdit(user)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <UsersTable
+              users={users}
+              isDeleting={
+                deleteMutation.isPending
+              }
+              onEdit={handleEdit}
+              onDelete={
+                handleDeleteClick
+              }
+            />
 
             {meta && (
               <Pagination
@@ -236,8 +251,24 @@ export function UsersList() {
 
       <UserFormDialog
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={
+          handleFormOpenChange
+        }
         user={editingUser}
+      />
+
+      <DeleteUserDialog
+        open={deleteDialogOpen}
+        user={deletingUser}
+        isPending={
+          deleteMutation.isPending
+        }
+        onOpenChange={
+          handleDeleteDialogChange
+        }
+        onConfirm={
+          handleConfirmDelete
+        }
       />
     </div>
   );

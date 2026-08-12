@@ -15,7 +15,7 @@ import {
 
 import type { TimeSlotConfigFormValues } from "@/schemas/working-hours.schema";
 
-const DURATIONS = [15, 30, 45, 60, 90, 120];
+const DURATIONS = [30, 45, 60, 90, 120];
 
 type Props = {
   form: UseFormReturn<TimeSlotConfigFormValues>;

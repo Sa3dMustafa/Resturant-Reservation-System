@@ -10,8 +10,8 @@ export default function AboutSection() {
     <section className="bg-black py-20 px-10" id="about">
       <div className="container">
         <div className="grid items-center gap-20 lg:grid-cols-2">
-          <AboutContent />
           <AboutImage />
+          <AboutContent />
         </div>
       </div>
       <WhyChooseUS />

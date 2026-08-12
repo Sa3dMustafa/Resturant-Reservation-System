@@ -5,32 +5,43 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginSchema, type LoginFormValues } from "@/schemas/auth.schema";
+
+import {
+  loginSchema,
+  type LoginFormValues,
+} from "@/schemas/auth.schema";
+
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { useRouter } from "@/i18n/navigation";
 import { ApiRequestError } from "@/lib/api/client";
-import { toast } from "sonner";
 
 export function LoginForm() {
   const t = useTranslations("auth");
   const tCommon = useTranslations("common");
+
   const { login, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
       router.replace("/dashboard");
     }
-  }, [isLoading, isAuthenticated]); // eslint-disable-line react-hooks/exhaustive-deps
-  const [showPassword, setShowPassword] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
+  }, [isLoading, isAuthenticated, router]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { username: "", password: "" },
+    defaultValues: {
+      username: "",
+      password: "",
+    },
   });
 
   const onSubmit = async (values: LoginFormValues) => {
@@ -64,25 +75,35 @@ export function LoginForm() {
         <h1 className="font-display text-3xl font-semibold">
           {t("welcomeBack")}
         </h1>
+
         <p className="mt-2 text-sm text-muted-foreground">
           {t("loginSubtitle")}
         </p>
       </div>
 
       {serverError && (
-        <div className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        <div
+          role="alert"
+          className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+        >
           {serverError}
         </div>
       )}
 
-      <div className="flex justify-between gap-4 items-center">
+      <div className="space-y-4">
+        {/* Username */}
         <div className="space-y-1.5">
-          <Label htmlFor="username">{t("username")}</Label>
+          <Label htmlFor="username">
+            {t("username")}
+          </Label>
+
           <Input
             id="username"
+            type="text"
             autoComplete="username"
             {...form.register("username")}
           />
+
           {form.formState.errors.username && (
             <p className="text-xs text-destructive">
               {t(
@@ -94,19 +115,35 @@ export function LoginForm() {
           )}
         </div>
 
+        {/* Password */}
         <div className="space-y-1.5">
-          <Label htmlFor="password">{t("password")}</Label>
+          <Label htmlFor="password">
+            {t("password")}
+          </Label>
+
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
+              className="pe-10"
               {...form.register("password")}
             />
+
             <button
               type="button"
-              onClick={() => setShowPassword((s) => !s)}
-              className="absolute inset-e-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute inset-e-0 top-0 flex h-full w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
+              aria-label={
+                showPassword
+                  ? "Hide password"
+                  : "Show password"
+              }
+              title={
+                showPassword
+                  ? "Hide password"
+                  : "Show password"
+              }
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />
@@ -115,6 +152,7 @@ export function LoginForm() {
               )}
             </button>
           </div>
+
           {form.formState.errors.password && (
             <p className="text-xs text-destructive">
               {t(
@@ -133,7 +171,9 @@ export function LoginForm() {
         className="w-full"
         disabled={form.formState.isSubmitting}
       >
-        {form.formState.isSubmitting ? t("loggingIn") : t("login")}
+        {form.formState.isSubmitting
+          ? t("loggingIn")
+          : t("login")}
       </Button>
     </form>
   );

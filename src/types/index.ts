@@ -1,7 +1,11 @@
 // ============ Enums ============
 export type UserRole = "ADMIN" | "STAFF";
 
-export type ReservationStatus = "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
+export type ReservationStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "CANCELLED"
+  | "COMPLETED";
 
 export type TableStatus = "AVAILABLE" | "RESERVED" | "OCCUPIED" | "MAINTENANCE";
 
@@ -15,6 +19,7 @@ export interface User {
   email?: string;
   role: UserRole;
   isActive: boolean;
+  isDeleted: boolean;
   createdAt: string;
   updatedAt?: string;
 }
@@ -210,7 +215,10 @@ export interface ReservationListItem {
 }
 
 export interface UpdateReservationStatusRequest {
-  status: Extract<ReservationStatus, "CONFIRMED" | "CANCELLED" | "COMPLETED" | "NO_SHOW">;
+  status: Extract<
+    ReservationStatus,
+    "CONFIRMED" | "CANCELLED" | "COMPLETED" | "NO_SHOW"
+  >;
   cancellationReason?: string;
 }
 
@@ -231,8 +239,8 @@ export interface PaginationMeta {
 }
 
 export interface ReservationsResponseData {
-    reservations: ReservationListItem[];
-    meta: PaginationMeta;
+  reservations: ReservationListItem[];
+  meta: PaginationMeta;
 }
 
 export interface ReservationsQueryParams {
@@ -258,11 +266,9 @@ export interface CreateUserRequest {
 
 export interface UpdateUserRequest {
   name?: string;
-  username?: string;
   role?: UserRole;
   isActive?: boolean;
   newPassword?: string;
-  confirmNewPassword?: string;
 }
 
 export interface UsersQueryParams {

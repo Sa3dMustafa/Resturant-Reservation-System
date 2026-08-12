@@ -171,18 +171,18 @@
     }
   },
   "nav": {
-  "dashboard": "لوحة التحكم",
-  "reservations": "الحجوزات",
-  "staffAccounts": "حسابات الموظفين",
-  "manageTables": "إدارة الطاولات",
-  "workingHours": "ساعات العمل",
-  "slotDuration": "مدة الفترة الزمنية",
-  "profile": "الملف الشخصي",
-  "openMenu": "فتح قائمة التنقل",
-  "dashboardNavigation": "قائمة تنقل لوحة التحكم",
-  "admin": "مسؤول",
-  "staff": "موظف"
-},
+    "dashboard": "لوحة التحكم",
+    "reservations": "الحجوزات",
+    "staffAccounts": "حسابات الموظفين",
+    "manageTables": "إدارة الطاولات",
+    "workingHours": "ساعات العمل",
+    "slotDuration": "مدة الفترة الزمنية",
+    "profile": "الملف الشخصي",
+    "openMenu": "فتح قائمة التنقل",
+    "dashboardNavigation": "قائمة تنقل لوحة التحكم",
+    "admin": "مسؤول",
+    "staff": "موظف"
+  },
   "auth": {
     "welcomeBack": "سعداء برؤيتك مجددًا!",
     "loginSubtitle": "سجّل الدخول لمتابعة إدارة الحجوزات وتقديم أفضل تجربة طعام.",
@@ -258,6 +258,10 @@
     "yesCancel": "نعم، إلغاء",
     "cancelledSuccessfully": "تم إلغاء حجزك بنجاح.",
     "alreadyUsed": "تم استخدام هذا الحجز بالفعل للوقت المحجوز. الرجاء اختيار فترة زمنية أخرى.",
+    "restaurantClosed": "المطعم مغلق في هذا اليوم، ولا تتوفر الحجوزات.",
+    "selectTableFirst": "اختر طاولة للمتابعة.",
+    "tableCapacity": "سعة الطاولة",
+    "consecutiveSlotsOnly": "يجب اختيار مواعيد متتالية بدون أي فواصل.",
     "emptyDay": {
       "title": "لا توجد حجوزات في هذا اليوم",
       "description": "لا توجد حجوزات لليوم المحدد."
@@ -307,6 +311,22 @@
     "createTableTost": "تم إنشاء الطاولة بنجاح.",
     "editTable": "تعديل الطاولة",
     "deleteConfirm": "هل أنت متأكد أنك تريد حذف هذه الطاولة؟ لا يمكن التراجع عن هذا الإجراء.",
+    "tableDetails": "تفاصيل الطاولة",
+    "tableDetailsDescription": "عرض بيانات الطاولة والحجوزات الخاصة بها اليوم.",
+    "reservations": "الحجوزات",
+    "reservationsForDate": "الحجوزات المجدولة لهذا اليوم",
+    "reservation": "حجز",
+    "unknownClient": "عميل غير معروف",
+    "reservationCode": "كود الحجز",
+    "guests": "عدد الضيوف",
+    "people": "أشخاص",
+    "phone": "رقم الهاتف",
+    "time": "الوقت",
+    "timeSlots": "مواعيد الحجز",
+    "specialRequests": "طلبات خاصة",
+    "noReservations": "لا توجد حجوزات",
+    "noReservationsDescription": "لا توجد حجوزات مرتبطة بهذه الطاولة لهذا اليوم.",
+    "email":"البريد الإلكتروني",
     "status": {
       "AVAILABLE": "متاحة",
       "RESERVED": "محجوزة",
@@ -332,16 +352,36 @@
     "password": "كلمة المرور",
     "newPassword": "كلمة المرور الجديدة",
     "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
+
     "roles": {
       "ADMIN": "مسؤول",
       "STAFF": "موظف"
     },
+
+    "createdSuccessfully": "تم إنشاء حساب الموظف بنجاح.",
+    "updatedSuccessfully": "تم التعديل بنجاح.",
+    "deletedSuccessfully": "تم حذف المستخدم بنجاح.",
+
+    "deleted": "تم الحذف",
+    "notDeleted": "غير محذوف",
+
+    "delete": "حذف",
+    "deleting": "جاري الحذف...",
+    "alreadyDeleted": "تم حذف المستخدم بالفعل.",
+
+    "deleteTitle": "حذف المستخدم؟",
+    "deleteDescription": "هل أنت متأكد أنك تريد حذف {name}؟ لا يمكن التراجع عن هذا الإجراء.",
+
+    "cannotEditDeleted": "لا يمكن تعديل المستخدم المحذوف.",
+
     "empty": {
       "title": "لا توجد حسابات بعد",
       "description": "أنشئ حساب الموظف الأول للبدء."
     },
+
     "errors": {
-      "usernameMin": "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل."
+      "usernameMin": "يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل.",
+      "deleteFailed": "فشل حذف المستخدم."
     }
   },
   "workingHours": {

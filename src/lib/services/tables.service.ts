@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api/client";
+
 import type {
   CreateTableRequest,
   RestaurantTable,
@@ -24,12 +25,16 @@ interface TablesListResponse {
     total: number;
     totalPages: number;
   };
+
   reservations?: RestaurantTable[];
+
   tables?: RestaurantTable[];
 }
 
 export const tablesService = {
-  list: async (params: TablesListParams): Promise<RestaurantTable[]> => {
+  list: async (
+    params: TablesListParams,
+  ): Promise<RestaurantTable[]> => {
     const q = new URLSearchParams();
 
     q.set("date", params.date);
@@ -51,104 +56,88 @@ export const tablesService = {
     }
 
     const data = await apiClient.get<TablesListResponse>(
-      `/tables?${q.toString()}`
+      `/tables?${q.toString()}`,
     );
 
-    // Current backend response:
-    // {
-    //   meta: {...},
-    //   reservations: [...]
-    // }
-    //
-    // Despite the name `reservations`, these are RestaurantTable objects.
-    if (Array.isArray(data.reservations)) {
-      return data.reservations;
-    }
-
-    // Backward compatibility if API returns:
-    // { tables: [...] }
     if (Array.isArray(data.tables)) {
       return data.tables;
     }
 
-    // Backward compatibility if API returns:
-    // { tables: { tables: [...] } }
-    if (
-      data.tables &&
-      typeof data.tables === "object" &&
-      "tables" in data.tables
-    ) {
-      const nestedTables = (
-        data.tables as unknown as { tables?: RestaurantTable[] }
-      ).tables;
-
-      if (Array.isArray(nestedTables)) {
-        return nestedTables;
-      }
+    if (Array.isArray(data.reservations)) {
+      return data.reservations;
     }
 
     if (process.env.NODE_ENV !== "production") {
       console.error(
         "[tablesService.list] Unexpected /tables response shape:",
-        data
+        data,
       );
     }
 
     throw new Error(
-      "Unexpected response shape from GET /tables. Expected reservations[] or tables[]."
+      "Unexpected response shape from GET /tables. Expected tables[] or reservations[].",
     );
   },
 
   timeSlots: async (): Promise<TimeSlot[]> => {
-    const data = await apiClient.get<{ slots: TimeSlot[] }>(
-      "/tables/time-slots"
-    );
+    const data = await apiClient.get<{
+      slots: TimeSlot[];
+    }>("/tables/time-slots");
 
     return data.slots;
   },
 
   getById: async (
     id: string,
-    date: string
+    date: string,
   ): Promise<RestaurantTable | null> => {
     const data = await apiClient.get<{
       table: RestaurantTable | null;
-    }>(`/tables/${id}?date=${encodeURIComponent(date)}`);
+    }>(
+      `/tables/${id}?date=${encodeURIComponent(date)}`,
+    );
 
     return data.table;
   },
 
   updateStatus: async (
     id: string,
-    payload: UpdateTableStatusRequest
+    payload: UpdateTableStatusRequest,
   ): Promise<RestaurantTable> => {
-    const data = await apiClient.post<{
-      table?: RestaurantTable;
-    } & Partial<RestaurantTable>>(`/tables/${id}/status`, payload);
+    const data = await apiClient.post<
+      {
+        table?: RestaurantTable;
+      } & Partial<RestaurantTable>
+    >(`/tables/${id}/status`, payload);
 
     return (data.table ?? data) as RestaurantTable;
   },
 
   create: async (
-    payload: CreateTableRequest
+    payload: CreateTableRequest,
   ): Promise<RestaurantTable> => {
-    const data = await apiClient.post<{
-      table?: RestaurantTable;
-    } & Partial<RestaurantTable>>("/admin/tables", payload);
+    const data = await apiClient.post<
+      {
+        table?: RestaurantTable;
+      } & Partial<RestaurantTable>
+    >("/admin/tables", payload);
 
     return (data.table ?? data) as RestaurantTable;
   },
 
   update: async (
     id: string,
-    payload: UpdateTableRequest
+    payload: UpdateTableRequest,
   ): Promise<RestaurantTable> => {
-    const data = await apiClient.patch<{
-      table?: RestaurantTable;
-    } & Partial<RestaurantTable>>(`/admin/tables/${id}`, payload);
+    const data = await apiClient.patch<
+      {
+        table?: RestaurantTable;
+      } & Partial<RestaurantTable>
+    >(`/admin/tables/${id}`, payload);
 
     return (data.table ?? data) as RestaurantTable;
   },
 
-  remove: (id: string) => apiClient.delete(`/admin/tables/${id}`),
+  remove: (id: string) =>
+    apiClient.delete(`/admin/tables/${id}`),
 };

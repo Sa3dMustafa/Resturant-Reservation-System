@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { useTranslations } from "next-intl";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,26 +19,35 @@ import {
 
 import { Switch } from "@/components/ui/switch";
 
-import {
-  type UpdateUserFormValues,
-} from "@/schemas/user.schema";
-
+import type { UpdateUserFormValues } from "@/schemas/user.schema";
 import type { UserRole } from "@/types";
+
+interface UserEditFormProps {
+  form: UseFormReturn<UpdateUserFormValues>;
+  isPending: boolean;
+  onSubmit: (values: UpdateUserFormValues) => void;
+  onCancel: () => void;
+}
 
 export function UserEditForm({
   form,
   isPending,
   onSubmit,
   onCancel,
-}: {
-  form: UseFormReturn<UpdateUserFormValues>;
-  isPending: boolean;
-  onSubmit: (values: UpdateUserFormValues) => void;
-  onCancel: () => void;
-}) {
+}: UserEditFormProps) {
   const t = useTranslations("user");
   const tCommon = useTranslations("common");
   const tAuth = useTranslations("auth");
+
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
+
+  const nameError = form.formState.errors.name?.message;
+  const newPasswordError =
+    form.formState.errors.newPassword?.message;
+  const confirmPasswordError =
+    form.formState.errors.confirmNewPassword?.message;
 
   return (
     <form
@@ -44,15 +55,19 @@ export function UserEditForm({
       className="space-y-4"
     >
       <div className="space-y-1.5">
-        <Label>{tCommon("name")}</Label>
+        <Label htmlFor="edit-user-name">
+          {tCommon("name")}
+        </Label>
 
-        <Input {...form.register("name")} />
+        <Input
+          id="edit-user-name"
+          {...form.register("name")}
+          disabled={isPending}
+        />
 
-        {form.formState.errors.name && (
+        {nameError && (
           <p className="text-xs text-destructive">
-            {tCommon(
-              form.formState.errors.name.message as never
-            )}
+            {tCommon(nameError as never)}
           </p>
         )}
       </div>
@@ -63,15 +78,12 @@ export function UserEditForm({
         <Select
           value={form.watch("role")}
           onValueChange={(value) =>
-            form.setValue(
-              "role",
-              value as UserRole,
-              {
-                shouldValidate: true,
-                shouldDirty: true,
-              }
-            )
+            form.setValue("role", value as UserRole, {
+              shouldValidate: true,
+              shouldDirty: true,
+            })
           }
+          disabled={isPending}
         >
           <SelectTrigger>
             <SelectValue />
@@ -90,58 +102,123 @@ export function UserEditForm({
       </div>
 
       <div className="flex items-center justify-between rounded-md border border-border px-3 py-2">
-        <Label className="text-foreground">
+        <Label
+          htmlFor="edit-user-active"
+          className="text-foreground"
+        >
           {tCommon("active")}
         </Label>
 
         <Switch
+          id="edit-user-active"
           checked={form.watch("isActive")}
           onCheckedChange={(value) =>
-            form.setValue(
-              "isActive",
-              value,
-              {
-                shouldValidate: true,
-                shouldDirty: true,
-              }
-            )
+            form.setValue("isActive", value, {
+              shouldValidate: true,
+              shouldDirty: true,
+            })
           }
+          disabled={isPending}
         />
       </div>
 
+      {/* New Password */}
       <div className="space-y-1.5">
-        <Label>{t("newPassword")}</Label>
+        <Label htmlFor="edit-user-password">
+          {t("newPassword")}
+        </Label>
 
-        <Input
-          type="password"
-          {...form.register("newPassword")}
-        />
+        <div className="relative">
+          <Input
+            id="edit-user-password"
+            type={showNewPassword ? "text" : "password"}
+            className="pe-10"
+            {...form.register("newPassword")}
+            disabled={isPending}
+          />
 
-        {form.formState.errors.newPassword && (
+          <button
+            type="button"
+            onClick={() =>
+              setShowNewPassword((prev) => !prev)
+            }
+            disabled={isPending}
+            className="absolute inset-e-0 top-0 flex h-full w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50"
+            aria-label={
+              showNewPassword
+                ? "Hide new password"
+                : "Show new password"
+            }
+            title={
+              showNewPassword
+                ? "Hide new password"
+                : "Show new password"
+            }
+          >
+            {showNewPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+
+        {newPasswordError && (
           <p className="text-xs text-destructive">
             {tAuth(
-              form.formState.errors.newPassword.message
-                ?.split(".")
-                .pop() as never
+              newPasswordError.split(".").pop() as never,
             )}
           </p>
         )}
       </div>
 
+      {/* Confirm New Password */}
       <div className="space-y-1.5">
-        <Label>{t("confirmNewPassword")}</Label>
+        <Label htmlFor="edit-user-confirm-password">
+          {t("confirmNewPassword")}
+        </Label>
 
-        <Input
-          type="password"
-          {...form.register("confirmNewPassword")}
-        />
+        <div className="relative">
+          <Input
+            id="edit-user-confirm-password"
+            type={
+              showConfirmPassword ? "text" : "password"
+            }
+            className="pe-10"
+            {...form.register("confirmNewPassword")}
+            disabled={isPending}
+          />
 
-        {form.formState.errors.confirmNewPassword && (
+          <button
+            type="button"
+            onClick={() =>
+              setShowConfirmPassword((prev) => !prev)
+            }
+            disabled={isPending}
+            className="absolute inset-e-0 top-0 flex h-full w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 disabled:pointer-events-none disabled:opacity-50"
+            aria-label={
+              showConfirmPassword
+                ? "Hide confirm password"
+                : "Show confirm password"
+            }
+            title={
+              showConfirmPassword
+                ? "Hide confirm password"
+                : "Show confirm password"
+            }
+          >
+            {showConfirmPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+
+        {confirmPasswordError && (
           <p className="text-xs text-destructive">
             {tAuth(
-              form.formState.errors.confirmNewPassword.message
-                ?.split(".")
-                .pop() as never
+              confirmPasswordError.split(".").pop() as never,
             )}
           </p>
         )}

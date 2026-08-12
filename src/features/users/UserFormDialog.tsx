@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect } from "react";
+
 import { useForm } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+
 import { useTranslations } from "next-intl";
+
 import { toast } from "sonner";
 
 import {
@@ -20,27 +24,26 @@ import {
   type UpdateUserFormValues,
 } from "@/schemas/user.schema";
 
-import {
-  useCreateUser,
-  useUpdateUser,
-} from "@/hooks/useUsers";
+import { useCreateUser, useUpdateUser } from "@/hooks/useUsers";
 
 import { ApiRequestError } from "@/lib/api/client";
 
-import type { AdminUser } from "@/types";
+import type { AdminUser, UpdateUserRequest } from "@/types";
 
 import { UserCreateForm } from "./CreateUserForm";
 import { UserEditForm } from "./UserEditForm";
+
+interface UserFormDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  user?: AdminUser | null;
+}
 
 export function UserFormDialog({
   open,
   onOpenChange,
   user,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  user?: AdminUser | null;
-}) {
+}: UserFormDialogProps) {
   const t = useTranslations("user");
   const tCommon = useTranslations("common");
 
@@ -49,9 +52,7 @@ export function UserFormDialog({
   const createMutation = useCreateUser();
   const updateMutation = useUpdateUser();
 
-  const isPending =
-    createMutation.isPending ||
-    updateMutation.isPending;
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   const createForm = useForm<CreateUserFormValues>({
     resolver: zodResolver(createUserSchema),
@@ -75,7 +76,9 @@ export function UserFormDialog({
   });
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      return;
+    }
 
     if (user) {
       editForm.reset({
@@ -85,14 +88,19 @@ export function UserFormDialog({
         newPassword: "",
         confirmNewPassword: "",
       });
-    } else {
-      createForm.reset({
-        name: "",
-        username: "",
-        password: "",
-        role: "STAFF",
-      });
+
+      createForm.reset();
+      return;
     }
+
+    createForm.reset({
+      name: "",
+      username: "",
+      password: "",
+      role: "STAFF",
+    });
+
+    editForm.reset();
   }, [open, user, createForm, editForm]);
 
   const onError = (error: unknown) => {
@@ -108,22 +116,27 @@ export function UserFormDialog({
     createMutation.mutate(values, {
       onSuccess: () => {
         toast.success(t("createdSuccessfully"));
+
         onOpenChange(false);
       },
+
       onError,
     });
   };
 
   const onEdit = (values: UpdateUserFormValues) => {
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
-    const payload: UpdateUserFormValues = {
-      ...values,
+    const payload: UpdateUserRequest = {
+      name: values.name,
+      role: values.role,
+      isActive: values.isActive,
     };
 
-    if (!payload.newPassword) {
-      delete payload.newPassword;
-      delete payload.confirmNewPassword;
+    if (values.newPassword) {
+      payload.newPassword = values.newPassword;
     }
 
     updateMutation.mutate(
@@ -137,22 +150,23 @@ export function UserFormDialog({
           onOpenChange(false);
         },
         onError,
-      }
+      },
     );
   };
 
+  const handleOpenChange = (value: boolean) => {
+    if (isPending) {
+      return;
+    }
+
+    onOpenChange(value);
+  };
+
   return (
-    <Dialog
-      open={open}
-      onOpenChange={onOpenChange}
-    >
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {isEdit
-              ? t("title")
-              : t("createAccount")}
-          </DialogTitle>
+          <DialogTitle>{isEdit ? t("title") : t("createAccount")}</DialogTitle>
         </DialogHeader>
 
         {isEdit ? (

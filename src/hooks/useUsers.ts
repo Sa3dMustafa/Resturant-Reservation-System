@@ -1,6 +1,10 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import { usersService } from "@/lib/services/users.service";
 
@@ -55,11 +59,34 @@ export function useUpdateUser() {
       payload: UpdateUserRequest;
     }) => usersService.update(id, payload),
 
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: usersKeys.all,
       });
-    },
 
+      queryClient.invalidateQueries({
+        queryKey: usersKeys.detail(variables.id),
+      });
+    },
+  });
+}
+
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) =>
+      usersService.delete(id),
+
+    onSuccess: async (_, id) => {
+      console.log("DELETE SUCCESS:", id);
+
+      await queryClient.invalidateQueries({
+        queryKey: usersKeys.all,
+        refetchType: "active",
+      });
+
+      console.log("USERS CACHE INVALIDATED");
+    },
   });
 }

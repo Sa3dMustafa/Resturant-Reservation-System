@@ -37,20 +37,18 @@ export function TimeSelectionStep({
   onContinue,
 }: Props) {
   return (
-    <div className="mt-8">
-      <TimeSlotGrid
-        table={table}
-        date={date}
-        guestCount={guestCount}
-        slots={availableSlots}
-        selectedSlotIds={selectedSlotIds}
-        occupiedSlotIds={occupiedSlotIds}
-        loading={slotsLoading}
-        error={slotsError}
-        onToggleSlot={onToggleSlot}
-        onBack={onBack}
-        onContinue={onContinue}
-      />
-    </div>
+    <TimeSlotGrid
+      table={table}
+      date={date}
+      guestCount={guestCount}
+      slots={availableSlots}
+      selectedSlotIds={selectedSlotIds}
+      occupiedSlotIds={occupiedSlotIds}
+      loading={slotsLoading}
+      error={slotsError}
+      onToggleSlot={onToggleSlot}
+      onBack={onBack}
+      onContinue={onContinue}
+    />
   );
 }

@@ -6,9 +6,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-import {
-  reservationsService,
-} from "@/lib/services/reservations.service";
+import { reservationsService } from "@/lib/services/reservations.service";
 
 import {
   tablesService,

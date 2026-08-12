@@ -1,7 +1,6 @@
 "use client";
 
 import { Check, Clock3 } from "lucide-react";
-
 import { useTranslations } from "next-intl";
 
 import type { RestaurantTable } from "@/types";
@@ -30,6 +29,48 @@ type Props = {
   onBack: () => void;
   onContinue: () => void;
 };
+
+function canSelectSlot(
+  slot: TimeSlot,
+  slots: TimeSlot[],
+  selectedSlotIds: string[],
+  occupiedSlotIds: Set<string>,
+) {
+  if (occupiedSlotIds.has(slot.id)) {
+    return false;
+  }
+
+  if (selectedSlotIds.length === 0) {
+    return true;
+  }
+
+  if (selectedSlotIds.includes(slot.id)) {
+    return true;
+  }
+
+  const selectedSlots = slots
+    .filter((item) =>
+      selectedSlotIds.includes(item.id),
+    )
+    .sort((a, b) =>
+      a.startTime.localeCompare(
+        b.startTime,
+      ),
+    );
+
+  const first = selectedSlots[0];
+  const last =
+    selectedSlots[selectedSlots.length - 1];
+
+  if (!first || !last) {
+    return true;
+  }
+
+  return (
+    slot.endTime === first.startTime ||
+    last.endTime === slot.startTime
+  );
+}
 
 export function TimeSlotGrid({
   table,
@@ -61,7 +102,8 @@ export function TimeSlotGrid({
             </div>
 
             <p className="mt-2 text-sm text-gray-500">
-              {table.tableNumber} · {date} · {guestCount}{" "}
+              {table.tableNumber} · {date} ·{" "}
+              {guestCount}{" "}
               {t("guests").toLowerCase()}
             </p>
           </div>
@@ -80,51 +122,81 @@ export function TimeSlotGrid({
         <div className="mt-7">
           {loading ? (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {Array.from({ length: 8 }).map((_, index) => (
-                <Skeleton key={index} className="h-14 rounded-lg bg-[#222]" />
-              ))}
+              {Array.from({ length: 8 }).map(
+                (_, index) => (
+                  <Skeleton
+                    key={index}
+                    className="h-14 rounded-lg bg-[#222]"
+                  />
+                ),
+              )}
             </div>
           ) : error ? (
             <ErrorState />
           ) : slots.length === 0 ? (
-            <EmptyState title={t("errors.timeSlotRequired")} />
+            <EmptyState
+              title={t(
+                "errors.timeSlotRequired",
+              )}
+            />
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-              {slots.map((slot) => {
-                const occupied = occupiedSlotIds.has(slot.id);
+            <>
+              <div className="mb-4 rounded-lg border border-[#4b3c1b] bg-[#17140d] px-4 py-3">
+                <p className="text-xs leading-5 text-gray-400">
+                  {t(
+                    "consecutiveSlotsOnly",
+                  )}
+                </p>
+              </div>
 
-                const selected = selectedSlotIds.includes(slot.id);
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                {slots.map((slot) => {
+                  const occupied =
+                    occupiedSlotIds.has(
+                      slot.id,
+                    );
 
-                return (
-                  <button
-                    key={slot.id}
-                    type="button"
-                    disabled={occupied}
-                    onClick={() => onToggleSlot(slot.id)}
-                    className={`
-                      flex min-h-14 items-center
-                      justify-center rounded-lg
-                      border px-3 py-3 text-sm
-                      font-medium transition-all
+                  const selected =
+                    selectedSlotIds.includes(
+                      slot.id,
+                    );
 
-                      ${
-                        occupied
-                          ? "cursor-not-allowed border-[#333] bg-[#171717] text-gray-600 line-through"
-                          : selected
-                            ? "border-[#c99a2e] bg-[#c99a2e] text-black ring-1 ring-[#c99a2e]"
-                            : "border-[#3e3e3e] bg-[#151515] text-white hover:border-[#c99a2e] hover:bg-[#1b180f]"
+                  const selectable =
+                    canSelectSlot(
+                      slot,
+                      slots,
+                      selectedSlotIds,
+                      occupiedSlotIds,
+                    );
+
+                  return (
+                    <button
+                      key={slot.id}
+                      type="button"
+                      disabled={
+                        occupied ||
+                        !selectable
                       }
-                    `}
-                  >
-                    <span>
-                      {slot.startTime} - {slot.endTime}
-                    </span>
+                      onClick={() =>
+                        onToggleSlot(
+                          slot.id,
+                        )
+                      }
+                      className={`flex min-h-14 items-center justify-center rounded-lg border px-3 py-3 text-sm font-medium transition-all ${occupied ? "cursor-not-allowed border-[#333] bg-[#171717] text-gray-600 line-through" : selected ? "border-[#c99a2e] bg-[#c99a2e] text-black ring-1 ring-[#c99a2e]" : !selectable ? "cursor-not-allowed border-[#333] bg-[#151515] text-gray-700 opacity-50" : "border-[#3e3e3e] bg-[#151515] text-white hover:border-[#c99a2e] hover:bg-[#1b180f]"}`}
+                    >
+                      <span>
+                        {slot.startTime} -{" "}
+                        {slot.endTime}
+                      </span>
 
-                    {selected && <Check className="ms-2 h-4 w-4" />}
-                  </button>
-                );
-              })}
-            </div>
+                      {selected && (
+                        <Check className="ms-2 h-4 w-4" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
 
@@ -140,7 +212,9 @@ export function TimeSlotGrid({
 
           <Button
             type="button"
-            disabled={selectedSlotIds.length === 0}
+            disabled={
+              selectedSlotIds.length === 0
+            }
             onClick={onContinue}
             className="bg-[#c99a2e] text-black hover:bg-[#ddb44b] disabled:bg-[#444] disabled:text-gray-600"
           >

@@ -1,6 +1,14 @@
 "use client";
 
+import { CalendarDays, ChevronDown } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
+
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 import { ReservationProgress } from "./ReservationProgress";
 import { TableSelectionStep } from "./table/TableSelectionStep";
@@ -12,8 +20,39 @@ import { useReservationWizard } from "./useReservationWizard";
 
 export function ReservationWizard() {
   const t = useTranslations("reservation");
+  const common = useTranslations("common");
 
   const wizard = useReservationWizard();
+
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const dialogOpen =
+    wizard.step === "time" ||
+    wizard.step === "personalInfo" ||
+    wizard.step === "confirmed";
+
+  const currentProcessStep =
+    wizard.step === "time"
+      ? 2
+      : wizard.step === "personalInfo"
+        ? 3
+        : wizard.step === "confirmed"
+          ? 3
+          : 1;
+
+  const selectedDate = wizard.date
+    ? parseISO(wizard.date)
+    : undefined;
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (!date) return;
+
+    wizard.handleDateChange(
+      format(date, "yyyy-MM-dd"),
+    );
+
+    setCalendarOpen(false);
+  };
 
   const progressSteps = [
     {
@@ -28,84 +67,179 @@ export function ReservationWizard() {
       number: 3,
       label: t("personalInfo"),
     },
-    {
-      number: 4,
-      label: t("reservationConfirmed"),
-    },
   ];
 
   return (
-    <main className="min-h-screen bg-[#0d0d0d]">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <header className="text-center">
-          <p className="text-sm font-medium text-[#c99a2e]">{t("table")}</p>
+    <main className="min-h-screen bg-black text-white">
+      <div className="mx-auto max-w-7xl px-5 py-8 sm:px-8 lg:px-10">
+        {/* HEADER */}
+        <header className="mb-8 flex items-center justify-between gap-6">
+          <div>
+            <p className="mb-1 text-xs font-medium uppercase tracking-[0.25em] text-[#c99a2e]">
+              {t("table")}
+            </p>
 
-          <h1 className="mt-2 text-3xl font-semibold text-white sm:text-4xl">
-            {t("selectTimeSlot")}
-          </h1>
+            <h1 className="text-2xl font-semibold text-white sm:text-3xl">
+              Restaurant Floor
+            </h1>
+          </div>
 
-          <p className="mx-auto mt-3 max-w-xl text-sm text-gray-500">
-            {t("chooseTableAndTime")}
-          </p>
+          {/* DATE PICKER */}
+          <Popover
+            open={calendarOpen}
+            onOpenChange={setCalendarOpen}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-11 gap-2 border-[#c99a2e] bg-transparent px-4 text-[#d8b45b] hover:bg-[#1b180f] hover:text-[#e5c56d]"
+              >
+                <CalendarDays className="h-4 w-4" />
+
+                <span className="hidden sm:inline">
+                  {wizard.date
+                    ? format(
+                        selectedDate ?? new Date(),
+                        "MMM dd, yyyy",
+                      )
+                    : "Set Date"}
+                </span>
+
+                <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+              </Button>
+            </PopoverTrigger>
+
+            <PopoverContent
+              align="end"
+              className="w-auto border-[#3f3f3f] bg-[#151515] p-0"
+            >
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateSelect}
+                disabled={{
+                  before: new Date(),
+                }}
+              />
+            </PopoverContent>
+          </Popover>
         </header>
 
-        <ReservationProgress
-          currentStep={wizard.currentStep}
-          steps={progressSteps}
-        />
-
+        {/* TABLE SELECTION */}
         {wizard.step === "table" && (
           <TableSelectionStep
             date={wizard.date}
-            guestCount={wizard.guestCount}
             selectedTable={wizard.selectedTable}
             tables={wizard.eligibleTables}
             tablesLoading={wizard.tablesLoading}
             tablesError={wizard.tablesError}
+            restaurantClosed={wizard.isRestaurantClosed}
             onRetry={wizard.refetchTables}
             onDateChange={wizard.handleDateChange}
-            onGuestCountChange={wizard.handleGuestCountChange}
             onSelectTable={wizard.handleSelectTable}
             onContinue={wizard.handleTableContinue}
           />
         )}
 
-        {wizard.step === "time" && wizard.selectedTable && (
-          <TimeSelectionStep
-            table={wizard.selectedTable}
-            date={wizard.date}
-            guestCount={wizard.guestCount}
-            availableSlots={wizard.availableSlots}
-            selectedSlotIds={wizard.selectedSlotIds}
-            occupiedSlotIds={wizard.occupiedSlotIds}
-            slotsLoading={wizard.slotsLoading}
-            slotsError={wizard.slotsError}
-            onToggleSlot={wizard.handleToggleSlot}
-            onBack={wizard.handleBackToTable}
-            onContinue={wizard.handleTimeContinue}
-          />
-        )}
+        {/* PROCESS DIALOG */}
+        <Dialog
+          open={dialogOpen}
+          onOpenChange={() => {
+            // Intentionally do nothing.
+            // Wizard navigation remains controlled
+            // by the existing logic.
+          }}
+        >
+          <DialogContent className="max-h-[92vh] w-[calc(100%-24px)] max-w-4xl overflow-y-auto border-[#3f3f3f] bg-[#0f0f0f] p-0 text-white sm:rounded-2xl">
+            {/* PROCESS */}
+            <div className="border-b border-[#292929] px-5 py-5 sm:px-7">
+              <ReservationProgress
+                currentStep={currentProcessStep}
+                steps={progressSteps}
+              />
+            </div>
 
-        {wizard.step === "personalInfo" && wizard.selectedTable && (
-          <PersonalInfoForm
-            table={wizard.selectedTable}
-            date={wizard.date}
-            guestCount={wizard.guestCount}
-            timeSlotIds={wizard.selectedSlotIds}
-            onBack={wizard.handleBackToTime}
-            onSuccess={wizard.handleReservationSuccess}
-          />
-        )}
+            {/* TIME */}
+            {wizard.step === "time" &&
+              wizard.selectedTable && (
+                <div className="p-4 sm:p-6">
+                  <TimeSelectionStep
+                    table={wizard.selectedTable}
+                    date={wizard.date}
+                    guestCount={wizard.guestCount}
+                    availableSlots={wizard.availableSlots}
+                    selectedSlotIds={
+                      wizard.selectedSlotIds
+                    }
+                    occupiedSlotIds={
+                      wizard.occupiedSlotIds
+                    }
+                    slotsLoading={
+                      wizard.slotsLoading ||
+                      wizard.workingHoursLoading
+                    }
+                    slotsError={
+                      wizard.slotsError ||
+                      wizard.workingHoursError
+                    }
+                    onToggleSlot={
+                      wizard.handleToggleSlot
+                    }
+                    onBack={
+                      wizard.handleBackToTable
+                    }
+                    onContinue={
+                      wizard.handleTimeContinue
+                    }
+                  />
+                </div>
+              )}
 
-        {wizard.step === "confirmed" &&
-          wizard.confirmedReservation &&
-          wizard.selectedTable && (
-            <ReservationConfirmation
-              reservation={wizard.confirmedReservation}
-              table={wizard.selectedTable}
-              clientName={wizard.confirmedClientName}
-            />
-          )}
+            {/* PERSONAL INFO */}
+            {wizard.step === "personalInfo" &&
+              wizard.selectedTable && (
+                <div className="p-4 sm:p-6">
+                  <PersonalInfoForm
+                    table={wizard.selectedTable}
+                    date={wizard.date}
+                    guestCount={wizard.guestCount}
+                    timeSlotIds={
+                      wizard.selectedSlotIds
+                    }
+                    onBack={
+                      wizard.handleBackToTime
+                    }
+                    onGuestCountChange={
+                      wizard.handleGuestCountChange
+                    }
+                    onSuccess={
+                      wizard.handleReservationSuccess
+                    }
+                  />
+                </div>
+              )}
+
+            {/* CONFIRMATION */}
+            {wizard.step === "confirmed" &&
+              wizard.confirmedReservation &&
+              wizard.selectedTable && (
+                <div className="p-4 sm:p-6">
+                  <ReservationConfirmation
+                    reservation={
+                      wizard.confirmedReservation
+                    }
+                    table={
+                      wizard.selectedTable
+                    }
+                    clientName={
+                      wizard.confirmedClientName
+                    }
+                  />
+                </div>
+              )}
+          </DialogContent>
+        </Dialog>
       </div>
     </main>
   );

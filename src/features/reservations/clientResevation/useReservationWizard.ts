@@ -1,13 +1,62 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 
 import { useActiveTimeSlots, useTables } from "@/hooks/useReservations";
+
+import { useWorkingHours } from "@/hooks/useWorkingHours";
 
 import type { CreatedReservation, RestaurantTable } from "@/types";
 
 import type { ReservationStep, TimeSlot } from "./types";
+
+function timeToMinutes(time: string) {
+  const [hours, minutes] = time.split(":").map(Number);
+
+  return hours * 60 + minutes;
+}
+
+function getDayOfWeek(date: string) {
+  return parse(date, "yyyy-MM-dd", new Date()).getDay();
+}
+
+function isSlotInsideWorkingHours(
+  slot: TimeSlot,
+  workingHour: {
+    openTime: string;
+    closeTime: string;
+  },
+) {
+  const slotStart = timeToMinutes(slot.startTime);
+  const slotEnd = timeToMinutes(slot.endTime);
+
+  const opening = timeToMinutes(workingHour.openTime);
+  const closing = timeToMinutes(workingHour.closeTime);
+
+  return slotStart >= opening && slotEnd <= closing;
+}
+
+function areSlotsConsecutive(slots: TimeSlot[]) {
+  if (slots.length <= 1) {
+    return true;
+  }
+
+  const sorted = [...slots].sort(
+    (a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime),
+  );
+
+  for (let index = 1; index < sorted.length; index++) {
+    const previous = sorted[index - 1];
+    const current = sorted[index];
+
+    if (previous.endTime !== current.startTime) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 export function useReservationWizard() {
   const [step, setStep] = useState<ReservationStep>("table");
@@ -32,7 +81,9 @@ export function useReservationWizard() {
     isLoading: tablesLoading,
     isError: tablesError,
     refetch: refetchTables,
-  } = useTables({ date });
+  } = useTables({
+    date,
+  });
 
   const {
     data: activeSlots,
@@ -40,10 +91,31 @@ export function useReservationWizard() {
     isError: slotsError,
   } = useActiveTimeSlots();
 
-  const eligibleTables = useMemo(
-    () => (tables ?? []).filter((table) => table.capacity >= guestCount),
-    [tables, guestCount],
-  );
+  const {
+    data: workingHours,
+    isLoading: workingHoursLoading,
+    isError: workingHoursError,
+  } = useWorkingHours();
+
+  const selectedDayOfWeek = useMemo(() => getDayOfWeek(date), [date]);
+
+  const selectedWorkingHour = useMemo(() => {
+    return (
+      workingHours?.find((day) => day.dayOfWeek === selectedDayOfWeek) ?? null
+    );
+  }, [workingHours, selectedDayOfWeek]);
+
+  const isRestaurantClosed = Boolean(selectedWorkingHour?.isClosed);
+
+  const eligibleTables = useMemo(() => {
+    if (isRestaurantClosed) {
+      return [];
+    }
+
+    return (tables ?? []).filter(
+      (table) => table.capacity >= guestCount && table.status === "AVAILABLE",
+    );
+  }, [tables, guestCount, isRestaurantClosed]);
 
   const occupiedSlotIds = useMemo(() => {
     if (!selectedTable?.reservations) {
@@ -57,10 +129,25 @@ export function useReservationWizard() {
     return new Set<string>(ids);
   }, [selectedTable]);
 
-  const availableSlots = useMemo<TimeSlot[]>(
-    () => (activeSlots ?? []).filter((slot) => slot.isActive),
-    [activeSlots],
-  );
+  const availableSlots = useMemo<TimeSlot[]>(() => {
+    if (!selectedWorkingHour || selectedWorkingHour.isClosed) {
+      return [];
+    }
+
+    return (activeSlots ?? [])
+      .filter((slot) => slot.isActive)
+      .filter((slot) => isSlotInsideWorkingHours(slot, selectedWorkingHour));
+  }, [activeSlots, selectedWorkingHour]);
+
+  const selectedSlots = useMemo(() => {
+    return selectedSlotIds
+      .map((id) => availableSlots.find((slot) => slot.id === id))
+      .filter((slot): slot is TimeSlot => Boolean(slot));
+  }, [selectedSlotIds, availableSlots]);
+
+  const hasValidSelectedSlots = useMemo(() => {
+    return selectedSlots.length > 0 && areSlotsConsecutive(selectedSlots);
+  }, [selectedSlots]);
 
   const handleDateChange = (value: string) => {
     setDate(value);
@@ -79,7 +166,11 @@ export function useReservationWizard() {
   };
 
   const handleSelectTable = (table: RestaurantTable) => {
-    if (table.status !== "AVAILABLE") {
+    if (
+      table.status !== "AVAILABLE" ||
+      table.capacity < guestCount ||
+      isRestaurantClosed
+    ) {
       return;
     }
 
@@ -88,7 +179,7 @@ export function useReservationWizard() {
   };
 
   const handleTableContinue = () => {
-    if (!selectedTable) {
+    if (!selectedTable || isRestaurantClosed || availableSlots.length === 0) {
       return;
     }
 
@@ -101,15 +192,73 @@ export function useReservationWizard() {
       return;
     }
 
-    setSelectedSlotIds((previous) =>
-      previous.includes(id)
-        ? previous.filter((slotId) => slotId !== id)
-        : [...previous, id],
-    );
+    const clickedSlot = availableSlots.find((slot) => slot.id === id);
+
+    if (!clickedSlot) {
+      return;
+    }
+
+    setSelectedSlotIds((previous) => {
+      if (previous.includes(id)) {
+        if (previous.length === 1) {
+          return [];
+        }
+
+        const selected = previous
+          .map((slotId) => availableSlots.find((slot) => slot.id === slotId))
+          .filter((slot): slot is TimeSlot => Boolean(slot))
+          .sort(
+            (a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime),
+          );
+
+        const first = selected[0];
+        const last = selected[selected.length - 1];
+
+        if (clickedSlot.id !== first.id && clickedSlot.id !== last.id) {
+          return previous;
+        }
+
+        return previous.filter((slotId) => slotId !== id);
+      }
+
+      if (previous.length === 0) {
+        return [id];
+      }
+
+      const selected = previous
+        .map((slotId) => availableSlots.find((slot) => slot.id === slotId))
+        .filter((slot): slot is TimeSlot => Boolean(slot));
+
+      const first = selected.reduce((min, slot) =>
+        timeToMinutes(slot.startTime) < timeToMinutes(min.startTime)
+          ? slot
+          : min,
+      );
+
+      const last = selected.reduce((max, slot) =>
+        timeToMinutes(slot.startTime) > timeToMinutes(max.startTime)
+          ? slot
+          : max,
+      );
+
+      const isBefore = clickedSlot.endTime === first.startTime;
+
+      const isAfter = last.endTime === clickedSlot.startTime;
+
+      if (!isBefore && !isAfter) {
+        return previous;
+      }
+
+      if (occupiedSlotIds.has(id)) {
+        return previous;
+      }
+
+      return [...previous, id];
+    });
   };
 
   const handleTimeContinue = () => {
-    if (!selectedTable || selectedSlotIds.length === 0) {
+    if (!selectedTable || !hasValidSelectedSlots) {
       return;
     }
 
@@ -160,15 +309,25 @@ export function useReservationWizard() {
     availableSlots,
     occupiedSlotIds,
 
+    selectedWorkingHour,
+    isRestaurantClosed,
+
+    hasValidSelectedSlots,
+
     tablesLoading,
     tablesError,
+
     slotsLoading,
     slotsError,
+
+    workingHoursLoading,
+    workingHoursError,
 
     refetchTables,
 
     handleDateChange,
     handleGuestCountChange,
+
     handleSelectTable,
     handleTableContinue,
 

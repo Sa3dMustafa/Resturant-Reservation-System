@@ -15,76 +15,86 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import {
-  type CreateUserFormValues,
-} from "@/schemas/user.schema";
-
+import type { CreateUserFormValues } from "@/schemas/user.schema";
 import type { UserRole } from "@/types";
+
+interface UserCreateFormProps {
+  form: UseFormReturn<CreateUserFormValues>;
+  isPending: boolean;
+  onSubmit: (values: CreateUserFormValues) => void;
+  onCancel: () => void;
+}
 
 export function UserCreateForm({
   form,
   isPending,
   onSubmit,
   onCancel,
-}: {
-  form: UseFormReturn<CreateUserFormValues>;
-  isPending: boolean;
-  onSubmit: (values: CreateUserFormValues) => void;
-  onCancel: () => void;
-}) {
+}: UserCreateFormProps) {
   const t = useTranslations("user");
   const tCommon = useTranslations("common");
   const tAuth = useTranslations("auth");
 
+  const nameError = form.formState.errors.name?.message;
+  const usernameError = form.formState.errors.username?.message;
+  const passwordError = form.formState.errors.password?.message;
+
   return (
-    <form
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="space-y-4"
-    >
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-1.5">
-        <Label>{tCommon("name")}</Label>
-
-        <Input {...form.register("name")} />
-
-        {form.formState.errors.name && (
-          <p className="text-xs text-destructive">
-            {tCommon(
-              form.formState.errors.name.message as never
-            )}
-          </p>
-        )}
-      </div>
-
-      <div className="space-y-1.5">
-        <Label>{t("username")}</Label>
-
-        <Input {...form.register("username")} />
-
-        {form.formState.errors.username && (
-          <p className="text-xs text-destructive">
-            {t(
-              form.formState.errors.username.message
-                ?.split(".")
-                .pop() as never
-            )}
-          </p>
-        )}
-      </div>
-
-      <div className="space-y-1.5">
-        <Label>{t("password")}</Label>
+        <Label htmlFor="create-user-name">
+          {tCommon("name")}
+        </Label>
 
         <Input
-          type="password"
-          {...form.register("password")}
+          id="create-user-name"
+          {...form.register("name")}
+          disabled={isPending}
         />
 
-        {form.formState.errors.password && (
+        {nameError && (
+          <p className="text-xs text-destructive">
+            {tCommon(nameError as never)}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="create-user-username">
+          {t("username")}
+        </Label>
+
+        <Input
+          id="create-user-username"
+          {...form.register("username")}
+          disabled={isPending}
+        />
+
+        {usernameError && (
+          <p className="text-xs text-destructive">
+            {t(
+              usernameError.split(".").pop() as never,
+            )}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="create-user-password">
+          {t("password")}
+        </Label>
+
+        <Input
+          id="create-user-password"
+          type="password"
+          {...form.register("password")}
+          disabled={isPending}
+        />
+
+        {passwordError && (
           <p className="text-xs text-destructive">
             {tAuth(
-              form.formState.errors.password.message
-                ?.split(".")
-                .pop() as never
+              passwordError.split(".").pop() as never,
             )}
           </p>
         )}
@@ -102,9 +112,10 @@ export function UserCreateForm({
               {
                 shouldValidate: true,
                 shouldDirty: true,
-              }
+              },
             )
           }
+          disabled={isPending}
         >
           <SelectTrigger>
             <SelectValue />

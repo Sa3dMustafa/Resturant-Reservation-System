@@ -19,9 +19,13 @@ type Props = {
   loading: boolean;
   error: boolean;
 
+  restaurantClosed: boolean;
+
   onRetry: () => void;
 
   onSelectTable: (table: RestaurantTable) => void;
+
+  onContinue: () => void;
 };
 
 export function TableGrid({
@@ -29,16 +33,28 @@ export function TableGrid({
   selectedTable,
   loading,
   error,
+  restaurantClosed,
   onRetry,
   onSelectTable,
+  onContinue,
 }: Props) {
   const t = useTranslations("reservation");
+
+  const handleSelectTable = (table: RestaurantTable) => {
+    onSelectTable(table);
+
+    setTimeout(() => {
+      onContinue();
+    }, 0);
+  };
 
   return (
     <Card className="border-[#3f3f3f] bg-[#111] shadow-none">
       <CardContent className="p-5">
         <div className="mb-5">
-          <h2 className="text-xl font-semibold text-white">{t("table")}</h2>
+          <h2 className="text-xl font-semibold text-white">
+            {t("table")}
+          </h2>
 
           <p className="mt-1 text-sm text-gray-500">
             {t("chooseTableAndTime")}
@@ -56,6 +72,8 @@ export function TableGrid({
           </div>
         ) : error ? (
           <ErrorState onRetry={onRetry} />
+        ) : restaurantClosed ? (
+          <EmptyState title={t("restaurantClosed")} />
         ) : tables.length === 0 ? (
           <EmptyState title={t("errors.tableRequired")} />
         ) : (
@@ -65,7 +83,7 @@ export function TableGrid({
                 key={table.id}
                 table={table}
                 selected={selectedTable?.id === table.id}
-                onSelect={onSelectTable}
+                onSelect={handleSelectTable}
               />
             ))}
           </div>
