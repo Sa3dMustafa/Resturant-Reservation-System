@@ -13,19 +13,26 @@ env:
   IMAGE_NAME: ghcr.io/sa3dmustafa/savora-frontend
 
 jobs:
-  build-and-deploy:
+
+  # ==========================================
+  # 1. BUILD & PUSH
+  # ==========================================
+  build:
+    name: Build and Push Frontend
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push image
+      - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -36,21 +43,50 @@ jobs:
             ${{ env.IMAGE_NAME }}:latest
             ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
+
+  # ==========================================
+  # 2. DEPLOY
+  # ==========================================
+  deploy:
+    name: Deploy Frontend to EC2
+    runs-on: ubuntu-latest
+
+    # IMPORTANT:
+    # Deploy will ONLY start if Build succeeds
+    needs: build
+
+    steps:
       - name: Deploy frontend on EC2
         uses: appleboy/ssh-action@v1.2.2
         env:
-          GHCR_USERNAME: ${{ github.actor }}
+          GHCR_USERNAME: ${{ github.repository_owner }}
           GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           envs: GHCR_USERNAME,GHCR_TOKEN
+
           script: |
             set -e
+
             cd ~/savora
-            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
+
+            echo "===== Login to GHCR ====="
+            echo "$GHCR_TOKEN" | docker login ghcr.io \
+              -u "$GHCR_USERNAME" \
+              --password-stdin
+
+            echo "===== Pull latest frontend image ====="
             docker compose pull frontend
+
+            echo "===== Restart frontend ====="
             docker compose up -d --no-deps frontend
+
+            echo "===== Cleanup old images ====="
             docker image prune -f
+
+            echo "===== Health check ====="
             curl -fsS http://localhost/ >/dev/null
+
+            echo "===== Frontend deployed successfully ====="
