@@ -49,15 +49,25 @@ jobs:
     steps:
       - name: Deploy
         uses: appleboy/ssh-action@v1.2.2
+
+        env:
+          GHCR_USERNAME: ${{ github.repository_owner }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: GHCR_USERNAME,GHCR_TOKEN
 
           script: |
             set -e
 
             cd ~/savora
+
+            echo "$GHCR_TOKEN" | docker login ghcr.io \
+              -u "$GHCR_USERNAME" \
+              --password-stdin
 
             docker compose pull frontend
             docker compose up -d --no-deps frontend
