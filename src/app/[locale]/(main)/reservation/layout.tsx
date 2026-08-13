@@ -1,4 +1,4 @@
-import Navbar from "@/features/landing/components/navbar/Navbar";
+
 export default function MainLayout({
   children,
 }: {
@@ -6,7 +6,6 @@ export default function MainLayout({
 }) {
   return (
     <>
-      <Navbar/>
       <main>{children}</main>
     </>
   );

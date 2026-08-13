@@ -24,8 +24,6 @@ type Props = {
   onRetry: () => void;
 
   onSelectTable: (table: RestaurantTable) => void;
-
-  onContinue: () => void;
 };
 
 export function TableGrid({
@@ -36,17 +34,8 @@ export function TableGrid({
   restaurantClosed,
   onRetry,
   onSelectTable,
-  onContinue,
 }: Props) {
   const t = useTranslations("reservation");
-
-  const handleSelectTable = (table: RestaurantTable) => {
-    onSelectTable(table);
-
-    setTimeout(() => {
-      onContinue();
-    }, 0);
-  };
 
   return (
     <Card className="border-[#3f3f3f] bg-[#111] shadow-none">
@@ -64,10 +53,7 @@ export function TableGrid({
         {loading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {Array.from({ length: 6 }).map((_, index) => (
-              <Skeleton
-                key={index}
-                className="h-67.5 rounded-xl bg-[#222]"
-              />
+              <Skeleton key={index} className="h-67.5 rounded-xl bg-[#222]" />
             ))}
           </div>
         ) : error ? (
@@ -83,7 +69,7 @@ export function TableGrid({
                 key={table.id}
                 table={table}
                 selected={selectedTable?.id === table.id}
-                onSelect={handleSelectTable}
+                onSelect={onSelectTable}
               />
             ))}
           </div>

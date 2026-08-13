@@ -19,11 +19,7 @@ type Props = {
 
   onDateChange: (value: string) => void;
 
-  onSelectTable: (
-    table: RestaurantTable,
-  ) => void;
-
-  onContinue: () => void;
+  onSelectTable: (table: RestaurantTable) => void;
 };
 
 export function TableSelectionStep({
@@ -36,7 +32,6 @@ export function TableSelectionStep({
   onRetry,
   onDateChange,
   onSelectTable,
-  onContinue,
 }: Props) {
   return (
     <TableGrid
@@ -47,7 +42,6 @@ export function TableSelectionStep({
       restaurantClosed={restaurantClosed}
       onRetry={onRetry}
       onSelectTable={onSelectTable}
-      onContinue={onContinue}
     />
   );
 }

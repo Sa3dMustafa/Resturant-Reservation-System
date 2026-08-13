@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { format, parse } from "date-fns";
 
 import { useActiveTimeSlots, useTables } from "@/hooks/useReservations";
-
 import { useWorkingHours } from "@/hooks/useWorkingHours";
 
 import type { CreatedReservation, RestaurantTable } from "@/types";
@@ -97,7 +96,9 @@ export function useReservationWizard() {
     isError: workingHoursError,
   } = useWorkingHours();
 
-  const selectedDayOfWeek = useMemo(() => getDayOfWeek(date), [date]);
+  const selectedDayOfWeek = useMemo(() => {
+    return getDayOfWeek(date);
+  }, [date]);
 
   const selectedWorkingHour = useMemo(() => {
     return (
@@ -159,6 +160,30 @@ export function useReservationWizard() {
   const handleGuestCountChange = (value: number) => {
     const nextValue = Math.max(1, value || 1);
 
+    /*
+     * لو المستخدم بيغير عدد الضيوف من Personal Info
+     * مانرجعش للـ table step.
+     *
+     * لأن ده كان السبب إن Dialog بيختفي عند الضغط
+     * على + أو -.
+     */
+    if (step === "personalInfo") {
+      if (selectedTable) {
+        const clampedValue = Math.min(selectedTable.capacity, nextValue);
+
+        setGuestCount(clampedValue);
+        return;
+      }
+
+      setGuestCount(nextValue);
+      return;
+    }
+
+    /*
+     * في Table Selection:
+     * تغيير عدد الضيوف ممكن يخلي الـ table الحالية
+     * غير مناسبة، لذلك نعمل reset للاختيار.
+     */
     setGuestCount(nextValue);
     setSelectedTable(null);
     setSelectedSlotIds([]);
@@ -171,11 +196,36 @@ export function useReservationWizard() {
       table.capacity < guestCount ||
       isRestaurantClosed
     ) {
-      return;
+      return false;
     }
 
     setSelectedTable(table);
     setSelectedSlotIds([]);
+
+    return true;
+  };
+
+  /*
+   * اختيار الـ table والانتقال للـ time step
+   * بيحصلوا في نفس العملية.
+   *
+   * دي أهم نقطة في حل مشكلة أول click.
+   */
+  const handleTableSelectAndContinue = (table: RestaurantTable) => {
+    if (
+      table.status !== "AVAILABLE" ||
+      table.capacity < guestCount ||
+      isRestaurantClosed ||
+      availableSlots.length === 0
+    ) {
+      return false;
+    }
+
+    setSelectedTable(table);
+    setSelectedSlotIds([]);
+    setStep("time");
+
+    return true;
   };
 
   const handleTableContinue = () => {
@@ -214,7 +264,7 @@ export function useReservationWizard() {
         const first = selected[0];
         const last = selected[selected.length - 1];
 
-        if (clickedSlot.id !== first.id && clickedSlot.id !== last.id) {
+        if (clickedSlot.id !== first?.id && clickedSlot.id !== last?.id) {
           return previous;
         }
 
@@ -267,6 +317,7 @@ export function useReservationWizard() {
 
   const handleBackToTable = () => {
     setSelectedSlotIds([]);
+    setSelectedTable(null);
     setStep("table");
   };
 
@@ -330,6 +381,7 @@ export function useReservationWizard() {
 
     handleSelectTable,
     handleTableContinue,
+    handleTableSelectAndContinue,
 
     handleToggleSlot,
     handleTimeContinue,

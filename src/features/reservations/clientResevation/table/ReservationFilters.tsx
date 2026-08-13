@@ -49,15 +49,8 @@ export function ReservationFilters({
           <Input
             type="date"
             value={date}
-            min={format(
-              new Date(),
-              "yyyy-MM-dd",
-            )}
-            onChange={(event) =>
-              onDateChange(
-                event.target.value,
-              )
-            }
+            min={format(new Date(), "yyyy-MM-dd")}
+            onChange={(event) => onDateChange(event.target.value)}
             className="mt-2 h-10 border-[#444] bg-[#191919] text-white scheme-dark"
           />
         </div>
@@ -80,10 +73,7 @@ export function ReservationFilters({
 
         <Button
           type="button"
-          disabled={
-            !selectedTable ||
-            restaurantClosed
-          }
+          disabled={!selectedTable || restaurantClosed}
           onClick={onContinue}
           className="mt-6 h-11 w-full bg-[#c99a2e] text-black hover:bg-[#ddb44b] disabled:bg-[#444] disabled:text-gray-600"
         >

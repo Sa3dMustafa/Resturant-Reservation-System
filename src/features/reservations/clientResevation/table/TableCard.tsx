@@ -20,8 +20,7 @@ export function TableCard({
 }: Props) {
   const t = useTranslations("reservation");
 
-  const available =
-    table.status === "AVAILABLE";
+  const available = table.status === "AVAILABLE";
 
   return (
     <button
@@ -56,19 +55,14 @@ export function TableCard({
         <span className="flex items-center gap-1">
           <Users2 className="h-3 w-3" />
 
-          {table.capacity}{" "}
-          {t("guests").toLowerCase()}
+          {table.capacity} {t("guests").toLowerCase()}
         </span>
 
-        <TableStatusBadge
-          status={table.status}
-        />
+        <TableStatusBadge status={table.status} />
       </div>
 
       <span className="mt-auto w-full rounded-md bg-[#c99a2e] py-2 text-center text-xs font-medium text-black transition-colors group-hover:bg-[#ddb44b]">
-        {selected
-          ? t("selected")
-          : t("selectTable")}
+        {selected ? t("selected") : t("selectTable")}
       </span>
     </button>
   );
